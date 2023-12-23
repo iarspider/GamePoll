@@ -1,0 +1,18 @@
+<!-- polls/templates/work_in_progress.html -->
+
+{% extends "polls/generic_message.html" %}
+
+{% block title %}{{ action }} poll?{% endblock %}
+{% block icon %}⚠{% endblock %}
+{% block icon_color %}#FFD700{% endblock %}
+{% block return %}{% endblock %}
+{% block message %}Are you sure you want to {{ action|lower }} poll "{{ poll_title }}"?
+      <div class="mt-3">
+      <form method="post" action="{% url 'poll_toggle_lock' poll_id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Confirm</button>
+      </form>
+
+      <a href="{% url 'poll_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,7 @@
+<!-- polls/templates/poll_not_found.html -->
+{% extends "polls/generic_message.html" %}
+
+{% block title %}Poll Not Found{% endblock %}
+{% block icon %}❌{% endblock %}  {# Cross mark icon for poll not found #}
+{% block icon_color %}#FF6347{% endblock %}  {# Tomato color for cross mark #}
+{% block message %}The poll with the given ID does not exist.{% endblock %}

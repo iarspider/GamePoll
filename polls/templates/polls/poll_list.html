@@ -1,0 +1,69 @@
+<!-- poll_list.html -->
+
+{% extends 'polls/layout.html' %}
+{% block content %}
+  <div class="container mt-4">
+    <h2>Poll List</h2>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Title</th>
+          <th scope="col">Games</th>
+          <th scope="col">Start Date</th>
+          {% if request.user.is_superuser %}
+            <th scope="col">State</th>
+          {% endif %}
+          <th scope="col">Results</th>
+        </tr>
+      </thead>
+      <tbody id="poll-table-body">
+        {% for poll in polls %}
+          <tr>
+            <td><a href="{% url "vote_add" poll.id %}">{{ poll.title }}</a></td>
+            <td>
+              {% for game in poll.games.all %}
+                <a href="{{ game.alt_url }}" target="_blank">{{ game.name }}</a>{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+            </td>
+            <td class="start-date" data-utc="{{ poll.start_date }}">{{ poll.start_date|date:"DATETIME_FORMAT" }}</td>
+          {% if request.user.is_superuser %}
+            <td><a href="{% url "poll_toggle_lock" poll.id %}">{% if poll.closed %} Locked {% else %} Active {% endif %}</a></td>
+          {% endif %}
+            <td><a href="{% url "poll_stats" poll.id %}">📊</a></td>
+          </tr>
+            {% empty %}
+            <tr><td colspan="4">No polls defined, <a href="{%  url "poll_add" %}">add one</a></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+        {% for page_num in polls.paginator.page_range %}
+          <li class="page-item{% if page_num == polls.number %} active{% endif %}">
+            <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+
+  <script>
+    // jQuery script for handling pagination and timezone conversion
+    document.addEventListener("DOMContentLoaded", function() {
+
+        // Function to convert UTC time to browser timezone
+        function convertTimezone() {
+            $('.start-date, .end-date').each(function () {
+                const utcDateString = $(this).data('utc');
+                const utcDate = new Date(utcDateString);
+                const localDate = utcDate.toLocaleString();
+                $(this).text(localDate);
+            });
+        }
+
+        convertTimezone();
+    });
+    </script>
+  {% endblock %}

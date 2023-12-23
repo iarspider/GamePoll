@@ -1,0 +1,18 @@
+<!-- game_import.html -->
+
+{% extends 'polls/layout.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2>Import Game</h2>
+    <form action="{% url 'game_import' %}" method="post" id="importGameForm">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="steam_id">Steam ID:</label>
+        <input type="number" class="form-control" id="steam_id" name="steam_id" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Import</button>
+      <a href="{% url 'game_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+  </div>
+{% endblock %}
