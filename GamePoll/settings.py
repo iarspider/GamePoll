@@ -28,7 +28,10 @@ SECRET_KEY = config["DJANGO_SECRET_KEY"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["fa54-81-28-197-83.ngrok-free.app", "localhost", "127.0.0.1", "vote.iarazumov.com"]
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "vote.iarazumov.com", "vote.lan"]
 
 
 # Application definition
@@ -41,7 +44,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "social_django",
-    "django_extensions",
     "polls.apps.PollsConfig",
 ]
 
@@ -144,7 +146,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
-
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+print(f"{STATIC_ROOT=}")
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -155,5 +158,32 @@ SOCIAL_AUTH_TWITCH_KEY = config.get("SOCIAL_AUTH_TWITCH_KEY")
 SOCIAL_AUTH_TWITCH_SECRET = config.get("SOCIAL_AUTH_TWITCH_SECRET")
 BROADCASTER_ID = "48432016"
 
-# AUTH_USER_MODEL = "polls.TwitchUser"
-# SOCIAL_AUTH_USER_MODEL = AUTH_USER_MODEL
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": "/var/log/django/debug.log",
+            "formatter": "verbose",
+        },
+        "console": {
+            "level": "WARNING",
+            "class": "logging.StreamHandler",
+        },
+    },
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {message}",
+            "style": "{",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file", "console"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
+}

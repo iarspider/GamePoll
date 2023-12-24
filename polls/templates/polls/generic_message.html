@@ -6,14 +6,14 @@
   <div class="container mt-5">
     <div class="card">
       <div class="card-body text-center">
-        <h2 class="card-title">{{ title }}</h2>
+        <h2 class="card-title">{% block title %}</h2>
 
         <!-- Icon container -->
         <div class="icon-container">
-          <span class="icon">{{ icon }}</span>
+          <span class="icon">{% block icon %}</span>
         </div>
 
-        <p class="card-text">{{ message }}</p>
+        <p class="card-text">{% block message %}</p>
 
         {% block return %}<p class="card-text"><a href="{% url 'poll_list' %}" class="btn btn-primary">Return to List Polls</a></p>{% endblock %}
       </div>

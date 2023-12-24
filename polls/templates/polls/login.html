@@ -17,13 +17,13 @@
         <a class="btn btn-primary block full-width m-b btn-twitch" href="{% url "social:begin" "twitch" %}">
             <i class="bi bi-twitch"></i> Login with Twitch
         </a>
-{#    <hr>
-    <form method="post" action="{% url 'login' %}">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-    </form>
-#}
+{#    <hr>#}
+{#    <form method="post" action="{% url 'login' %}">#}
+{#    {% csrf_token %}#}
+{#    {{ form.as_p }}#}
+{#    <button type="submit">Login</button>#}
+{#    </form>#}
+
 {% if error %}
     <p>{{ error }}</p>
 {% endif %}
