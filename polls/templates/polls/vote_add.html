@@ -35,7 +35,7 @@
         <hr/>
         <div id="sortable-list">
           {% for game in poll.games.all %}
-            <div class="card mb3 {% if game.excluded %}excluded{% endif %}"
+            <div class="card mb3"
                  data-stream-id="{{ game.steam_id }}">
               <div class="row g0">
                 <div class="col-md-10 d-flex align-items-center">
