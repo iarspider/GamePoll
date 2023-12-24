@@ -38,7 +38,6 @@ def fetch_user_details(backend, details, user=None, *args, **kwargs):
 
             if not TwitchUser.objects.filter(user=user).exists():
                 response = get_user(backend, access_token)
-                print(dir(response))
                 if response.status_code == 200:
                     user_info = response.json().get("data")[0]
                     user.username = user_info.get("login")
