@@ -14,16 +14,10 @@
         <h2>Login to Vote</h2>
         <p></p>
         <hr>
-        <a class="btn btn-primary block full-width m-b btn-twitch" href="{% url "social:begin" "twitch" %}">
+        <a class="btn btn-primary block full-width m-b btn-twitch" href="{% url "social:begin" "twitch" %}?next={{ request.GET.next }}">
             <i class="bi bi-twitch"></i> Login with Twitch
         </a>
-{#    <hr>#}
-{#    <form method="post" action="{% url 'login' %}">#}
-{#    {% csrf_token %}#}
-{#    {{ form.as_p }}#}
-{#    <button type="submit">Login</button>#}
-{#    </form>#}
-
+      <hr>
 {% if error %}
     <p>{{ error }}</p>
 {% endif %}

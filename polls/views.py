@@ -1,4 +1,5 @@
 import datetime
+import ipaddress
 import json
 import re
 
@@ -13,12 +14,11 @@ from django.http import (
 from django.shortcuts import render, redirect, reverse
 
 from polls.models import TwitchUser, Poll, Vote, GameVote, Game, PollBlock
-from .forms import LoginForm
 
 
 # Create your views here.
 def index(request):
-    return HttpResponse("Hello, world!")
+    return redirect("login")
 
 
 @login_required
@@ -41,27 +41,10 @@ def poll_list(request):
 
 
 def login_view(request):
-    if request.method == "POST":
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data["username"]
-            password = form.cleaned_data["password"]
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                # Redirect to a success page.
-                return redirect(reverse("poll/list"))
-            else:
-                # Return an 'invalid login' error message.
-                return render(
-                    request,
-                    "polls/login.html",
-                    {"form": form, "error": "Invalid login credentials"},
-                )
-    else:
-        form = LoginForm()
-
-    return render(request, "polls/login.html", {"form": form})
+    return render(
+        request,
+        "polls/login.html",
+    )
 
 
 @login_required
@@ -79,7 +62,7 @@ def profile(request):
 
     return render(
         request,
-        "polls/index.html",
+        "polls/profile.html",
         context={
             "user": user,
             "twitch_user": twitch_user,
@@ -136,7 +119,7 @@ def poll_vote(request, poll_id):
             game_vote.rating = (i + 1) if data["game_states"][str(game_id)] else -1
             game_vote.save()
 
-        return HttpResponseRedirect(reverse("vote_ok"))
+        return redirect("vote_ok")
 
     return render(request, "polls/vote_add.html", context={"poll": poll})
 
@@ -147,9 +130,7 @@ def poll_vote_ok(request):
 
 
 def login_redirect(request):
-    return HttpResponsePermanentRedirect(
-        reverse("login"),
-    )
+    return redirect("login", permanent=True)
 
 
 @login_required()
@@ -161,7 +142,7 @@ def poll_stats(request, poll_id):
             .count()
         )
         if tmp == 0:
-            return HttpResponseRedirect(request, reverse("poll_list"))
+            return redirect("poll_list")
 
     result = {}
     result_negative = {}
@@ -195,3 +176,12 @@ def poll_stats(request, poll_id):
             "result_negative": result_negative.items(),
         },
     )
+
+
+from django.contrib.auth import logout as auth_logout
+
+
+@login_required
+def logout(request):
+    auth_logout(request)
+    return redirect("login")
