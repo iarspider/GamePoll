@@ -16,7 +16,7 @@
     {% if request.user.is_superuser %} <tr><td>Superuser</td><td>Definitely</td></tr> {% endif %}
     </table>
 
-    <h1>Voted in polls</h1>
+    <h2>Voted in polls</h2>
 
     <ul>
     {% for poll in polls %}
@@ -25,5 +25,7 @@
       <li>No votes so far</li>
     {% endfor %}
     </ul>
+
+    <h2><a href="{% url "poll_list" %}">Go to poll list</a></h2>
 
 {% endblock %}
