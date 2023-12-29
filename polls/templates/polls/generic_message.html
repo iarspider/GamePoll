@@ -29,7 +29,7 @@
 
     .icon {
       font-size: 48px;
-      color: {{ icon_color }}; /* Use a variable for the icon color */
+      color: {%block icon_color %}green{%endblock}; /* Use a variable for the icon color */
     }
   </style>
 {% endblock %}
