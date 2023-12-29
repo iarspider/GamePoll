@@ -31,12 +31,12 @@
             <td class="start-date" data-utc="{{ poll.start_date }}">{{ poll.start_date|date:"DATETIME_FORMAT" }}</td>
             <td><a href="{% url "poll_stats" poll.id %}">📊</a></td>
           {% if request.user.is_superuser %}
-            <td><a href="{% url "poll_detailed_stats" poll.id %}">Details</a></td>
+            <td><a href="{% url "poll_details" poll.id %}">Details</a></td>
             <td><a href="{% url "poll_toggle_lock" poll.id %}">{% if poll.closed %} Locked {% else %} Active {% endif %}</a></td>
           {% endif %}
           </tr>
-            {% empty %}
-            <tr><td colspan="4">No available polls, check back later</td></tr>
+        {% empty %}
+          <tr><td colspan="4">No available polls, check back later</td></tr>
         {% endfor %}
       </tbody>
     </table>

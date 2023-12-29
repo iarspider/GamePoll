@@ -13,9 +13,11 @@
   <tbody>
   {% for row in results %}
     <tr>
-      <th scope="row">row.login</th>
-      {% for val in row.items %}
+      <th scope="row">{{ row.login }}</th>
+      {% for key,val in row.items %}
+        {% if key != "login" %}
       <td>{{ val }}</td>
+        {% endif %}
       {% endfor %}
     </tr>
   {% endfor %}
