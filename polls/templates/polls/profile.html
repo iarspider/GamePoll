@@ -1,7 +1,7 @@
 {% extends 'polls/layout.html' %}
 
 {% block content %}
-    <h1>Super secret page!</h1>
+    <h1>User profile</h1>
     <hr>
     <table>
         <tr><td>Username</td><td>{{ user.username }}</td></tr>
@@ -9,7 +9,7 @@
         <tr><td>Email</td><td>{{ email }}</td></tr>
     {% if twitch_user %}
         <tr><td>Twitch ID</td><td>{{ twitch_user }}</td></tr>
-      <tr><td>Subscriber</td><td>{% if twitch_user.subscribed %} ✅ {% else %} ⛔ {% endif %} </td></tr>
+      <tr><td>Subscriber</td><td>{% if twitch_user.subscribed %} ✅ {% else %} ❌ {% endif %} </td></tr>
     {% else %}
       <tr><td colspan="2">Not a Twitch user</td></tr>
     {% endif %}

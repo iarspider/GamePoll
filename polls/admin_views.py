@@ -226,7 +226,7 @@ def poll_detailed_stats(request, poll_id):
         raise PermissionDenied()
 
     poll = get_object_or_404(Poll, pk=poll_id)
-    keys = ["login", "owl", "bee", "cheese"]
+    keys = ["login", "owl", "bee", "cheese", "weight"]
     res = []
 
     for game in poll.games.all():
@@ -237,6 +237,7 @@ def poll_detailed_stats(request, poll_id):
         tmp["login"] = vote.person.first_name
         for k in ("owl", "bee", "cheese"):
             tmp[k] = "✅" if getattr(vote, k) else "❌"
+        tmp["weight"] = vote.weight
         for gamevote in vote.gamevote_set.all():
             tmp[gamevote.game.name] = gamevote.rating if gamevote.rating > 0 else "👎"
 
