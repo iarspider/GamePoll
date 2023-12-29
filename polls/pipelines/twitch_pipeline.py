@@ -2,6 +2,7 @@ from django.conf import settings
 
 from polls.models import TwitchUser
 
+import requests
 
 def get_user(backend, access_token):
     user_info_url = "https://api.twitch.tv/helix/users"
@@ -51,10 +52,10 @@ def fetch_user_details(backend, details, user=None, *args, **kwargs):
 
             twitch_user = TwitchUser.objects.get(user=user)
 
-            res = get_subscription(backend, access_token, twitch_user.twitch_user_id)
-            if res.status_code == 200:
+            try:
+                res = get_subscription(backend, access_token, twitch_user.twitch_user_id)
                 twitch_user.subscribed = True
-            else:
+            except requests.exceptions.HTTPError:
                 twitch_user.subscribed = False
 
             twitch_user.save()
