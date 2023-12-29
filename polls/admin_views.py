@@ -232,15 +232,17 @@ def poll_detailed_stats(request, poll_id):
     for game in poll.games.all():
         keys.append(game.name)
 
-    for vote in poll.vote_set:
+    for vote in poll.vote_set.all():
         tmp = {}
         tmp["login"] = vote.person.first_name
         for k in ("owl", "bee", "cheese"):
             tmp[k] = "✅" if getattr(vote, k) else "❌"
-        for gamevote in vote.gamevote_set:
+        for gamevote in vote.gamevote_set.all():
             tmp[gamevote.game.name] = gamevote.rating if gamevote.rating > 0 else "👎"
 
         res.append(tmp)
+
+    print({"keys": res[0].keys(), "results": res})
 
     return render(
         request, "polls/vote_details.html", {"keys": res[0].keys(), "results": res}
