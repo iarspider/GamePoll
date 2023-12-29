@@ -1,22 +1,18 @@
 import datetime
-import ipaddress
 import json
 import re
 
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.http import (
-    HttpResponse,
-    HttpResponsePermanentRedirect,
-    HttpResponseRedirect,
-)
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, redirect, get_object_or_404
 
 from polls.models import TwitchUser, Poll, Vote, GameVote, Game, PollBlock
 
 
-# Create your views here.
+# Special views
+
+
 def index(request):
     return redirect("login")
 
@@ -176,9 +172,6 @@ def poll_stats(request, poll_id):
             "result_negative": result_negative.items(),
         },
     )
-
-
-from django.contrib.auth import logout as auth_logout
 
 
 @login_required

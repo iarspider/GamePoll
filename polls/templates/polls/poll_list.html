@@ -4,6 +4,7 @@
 {% block content %}
   <div class="container mt-4">
     <h2>Poll List</h2>
+    {% if request.user.is_superuser %}<a class="btn btn-secondary" href="{%  url "poll_add" %}">Create poll</a>{% endif %}
 
     <table class="table">
       <thead>
@@ -11,10 +12,11 @@
           <th scope="col">Title</th>
           <th scope="col">Games</th>
           <th scope="col">Start Date</th>
+          <th scope="col">Results</th>
           {% if request.user.is_superuser %}
+            <th scope="col">Details</th>
             <th scope="col">State</th>
           {% endif %}
-          <th scope="col">Results</th>
         </tr>
       </thead>
       <tbody id="poll-table-body">
@@ -27,13 +29,14 @@
               {% endfor %}
             </td>
             <td class="start-date" data-utc="{{ poll.start_date }}">{{ poll.start_date|date:"DATETIME_FORMAT" }}</td>
+            <td><a href="{% url "poll_stats" poll.id %}">📊</a></td>
           {% if request.user.is_superuser %}
+            <td><a href="{% url "poll_detailed_stats" poll.id %}">Details</a></td>
             <td><a href="{% url "poll_toggle_lock" poll.id %}">{% if poll.closed %} Locked {% else %} Active {% endif %}</a></td>
           {% endif %}
-            <td><a href="{% url "poll_stats" poll.id %}">📊</a></td>
           </tr>
             {% empty %}
-            <tr><td colspan="4">No polls defined, <a href="{%  url "poll_add" %}">add one</a></td></tr>
+            <tr><td colspan="4">No available polls, check back later</td></tr>
         {% endfor %}
       </tbody>
     </table>

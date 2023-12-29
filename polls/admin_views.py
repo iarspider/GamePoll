@@ -6,6 +6,7 @@ from html.parser import HTMLParser
 
 import requests
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render, redirect, reverse, get_object_or_404
@@ -41,8 +42,10 @@ def is_superuser(user):
 
 
 @login_required
-@user_passes_test(is_superuser)
 def game_add(request):
+    if not request.user.is_superuser:
+        raise PermissionDenied()
+
     if request.method == "POST":
         # Get data from the POST request
         name = request.POST.get("name")
@@ -67,8 +70,10 @@ def game_add(request):
 
 
 @login_required
-@user_passes_test(is_superuser)
 def game_edit(request, game_id):
+    if not request.user.is_superuser:
+        raise PermissionDenied()
+
     if request.method == "POST":
         # Get data from the POST request
         # name = request.POST.get("name")
@@ -93,8 +98,10 @@ def game_edit(request, game_id):
 
 
 @login_required
-@user_passes_test(is_superuser)
 def game_list(request):
+    if not request.user.is_superuser:
+        raise PermissionDenied()
+
     paginator = Paginator(Game.objects.all(), 10, allow_empty_first_page=True)
     page_no = request.GET.get("page", 1)
     page_obj = paginator.get_page(page_no)
@@ -105,12 +112,9 @@ def game_list(request):
 
 
 @login_required
-@user_passes_test(is_superuser)
 def game_import(request):
     if not request.user.is_superuser:
-        return HttpResponseForbidden(
-            "Access Denied: You do not have the required permissions."
-        )
+        raise PermissionDenied()
 
     if request.method == "POST":
         game_id = int(request.POST.get("steam_id", -1))
@@ -167,8 +171,10 @@ def game_import(request):
 
 
 @login_required
-@user_passes_test(is_superuser)
 def poll_add(request):
+    if not request.user.is_superuser:
+        raise PermissionDenied()
+
     if request.method == "POST":
         data = json.loads(request.body)
         poll = Poll()
@@ -188,7 +194,11 @@ def poll_add(request):
     return render(request, "polls/poll_add.html", context={"games": Game.objects.all()})
 
 
+@login_required
 def poll_toggle_lock(request, poll_id):
+    if not request.user.is_superuser:
+        raise PermissionDenied()
+
     try:
         poll = Poll.objects.get(id=poll_id)
     except Poll.DoesNotExist:
@@ -207,4 +217,31 @@ def poll_toggle_lock(request, poll_id):
             "poll_id": poll.id,
             "action": "Unlock" if poll.closed else "Lock",
         },
+    )
+
+
+@login_required
+def poll_detailed_stats(request, poll_id):
+    if not request.user.is_superuser:
+        raise PermissionDenied()
+
+    poll = get_object_or_404(Poll, pk=poll_id)
+    keys = ["login", "owl", "bee", "cheese"]
+    res = []
+
+    for game in poll.games.all():
+        keys.append(game.name)
+
+    for vote in poll.vote_set:
+        tmp = {}
+        tmp["login"] = vote.person.first_name
+        for k in ("owl", "bee", "cheese"):
+            tmp[k] = "✅" if getattr(vote, k) else "❌"
+        for gamevote in vote.gamevote_set:
+            tmp[gamevote.game.name] = gamevote.rating if gamevote.rating > 0 else "👎"
+
+        res.append(tmp)
+
+    return render(
+        request, "polls/vote_details.html", {"keys": res[0].keys(), "results": res}
     )

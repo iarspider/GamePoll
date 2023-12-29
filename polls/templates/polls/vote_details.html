@@ -1,0 +1,24 @@
+<!-- polls/templates/chart_combined.html -->
+{% extends "polls/layout.html" %}
+{% block title %}Detailed poll results{% endblock %}
+{% block content %}
+<table class="table">
+  <thead>
+    <tr>
+      {% for key in keys %}
+      <th scope="col">{{ key }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+  {% for row in results %}
+    <tr>
+      <th scope="row">row.login</th>
+      {% for val in row.items %}
+      <td>{{ val }}</td>
+      {% endfor %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
