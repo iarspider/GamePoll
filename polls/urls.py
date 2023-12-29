@@ -19,6 +19,7 @@ poll_patterns = [
         name="poll_toggle_lock",
     ),
     path("stats/<int:poll_id>", views.poll_stats, name="poll_stats"),
+    path("details/<int:poll_id>", admin_views.poll_detailed_stats, name="poll_details"),
 ]
 
 
