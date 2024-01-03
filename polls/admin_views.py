@@ -119,18 +119,18 @@ def game_import(request):
 
     if request.method == "POST":
         for game_id in request.POST.getlist("steam_ids"):
-            has_game = Game.objects.filter(id=game_id).count() > 0
+            has_game = Game.objects.filter(steam_id=game_id).count() > 0
             if has_game:
                 messages.add_message(
                     request,
                     messages.ERROR,
-                    f'Game "{Game.objects.get(id=game_id)}" already exists in database',
+                    f'Game "{Game.objects.get(steam_id=game_id)}" already exists in database',
                 )
                 continue
 
             game_data = requests.get(
                 "https://store.steampowered.com/api/appdetails",
-                params=dict(appids=game_id),
+                params={"appids": game_id},
             ).json()
 
             if not game_data[str(game_id)].get("success", False):
@@ -167,7 +167,9 @@ def game_import(request):
                 game_tag.tag = this_tag
                 game_tag.save()
 
-            return HttpResponseRedirect(reverse("game_list"))
+            messages.success(request, f"Game {game} added successfully")
+
+        return HttpResponseRedirect(reverse("game_list"))
 
     return render(request, "polls/game_import.html")
 
