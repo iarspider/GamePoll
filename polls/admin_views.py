@@ -5,10 +5,11 @@ from abc import ABC
 from html.parser import HTMLParser
 
 import requests
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 
 from polls.models import Game, Poll, Tag, GameTag
@@ -117,26 +118,31 @@ def game_import(request):
         raise PermissionDenied()
 
     if request.method == "POST":
-        game_id = int(request.POST.get("steam_id", -1))
-        if game_id == -1:
-            return HttpResponseRedirect(reverse("game_list"))
+        for game_id in request.POST.getlist("steam_ids"):
+            has_game = Game.objects.filter(steam_id=game_id).count() > 0
+            if has_game:
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    f'Game "{Game.objects.get(steam_id=game_id)}" already exists in database',
+                )
+                continue
 
-        has_game = Game.objects.filter(id=game_id).count() > 0
-        if has_game:
-            return HttpResponseRedirect(reverse("game_list"))
+            game_data = requests.get(
+                "https://store.steampowered.com/api/appdetails",
+                params={"appids": game_id},
+            ).json()
 
-        game_data = requests.get(
-            "https://store.steampowered.com/api/appdetails", params=dict(appids=game_id)
-        ).json()
+            if not game_data[str(game_id)].get("success", False):
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    f"Game with id {game_id} not found in Steam DB",
+                )
+                continue
 
-        if not game_data[str(game_id)].get("success", False):
-            return HttpResponseRedirect(reverse("game_list"))
+            game_data = game_data[str(game_id)]["data"]
 
-        game_data = game_data[str(game_id)]["data"]
-
-        try:
-            game = Game.objects.get(steam_id=game_id)
-        except Game.DoesNotExist:
             game = Game(
                 name=game_data["name"],
                 steam_id=game_id,
@@ -151,19 +157,17 @@ def game_import(request):
             )
             game.save()
 
-        for tag_ in game_data["genres"]:
-            try:
-                this_tag = Tag.objects.get(id=tag_["id"])
-            except Tag.DoesNotExist:
-                this_tag = Tag()
-                this_tag.id = tag_["id"]
-                this_tag.name = tag_["description"]
-                this_tag.save()
+            for tag_ in game_data["genres"]:
+                this_tag = Tag.objects.get_or_create(
+                    id=tag_["id"], defaults={"name": tag_["description"]}
+                )[0]
 
-            game_tag = GameTag()
-            game_tag.game = game
-            game_tag.tag = this_tag
-            game_tag.save()
+                game_tag = GameTag()
+                game_tag.game = game
+                game_tag.tag = this_tag
+                game_tag.save()
+
+            messages.success(request, f"Game {game} added successfully")
 
         return HttpResponseRedirect(reverse("game_list"))
 
