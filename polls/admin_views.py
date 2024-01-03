@@ -160,7 +160,7 @@ def game_import(request):
             for tag_ in game_data["genres"]:
                 this_tag = Tag.objects.get_or_create(
                     id=tag_["id"], defaults={"name": tag_["description"]}
-                )
+                )[0]
 
                 game_tag = GameTag()
                 game_tag.game = game
