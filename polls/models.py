@@ -12,7 +12,7 @@ class Game(models.Model):
     small_logo_url = models.URLField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} (#{self.steam_id})"
 
 
 class Poll(models.Model):
