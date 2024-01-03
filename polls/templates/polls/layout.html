@@ -31,6 +31,21 @@
           <a class="nav-link" href="{% url 'profile' %}">Profile</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" href="{% url 'poll_list' %}">Polls</a>
+        </li>
+        {% if user.is_superuser %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'game_list' %}">Games</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'game_import' %}">Import games</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'poll_add' %}">Create poll</a>
+        </li>
+
+        {% endif %}
+        <li class="nav-item">
           <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
         </li>
       {% else %}
