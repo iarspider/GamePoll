@@ -43,7 +43,7 @@ def login_view(request):
             "polls/login.html",
         )
     else:
-        return redirect("/accounts/profile/")
+        return redirect("profile")
 
 
 @login_required
