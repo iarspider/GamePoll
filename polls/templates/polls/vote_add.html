@@ -12,6 +12,9 @@
         .card.excluded {
             filter: grayscale(100%);
         }
+        .handle {
+            cursor: move;
+        }
     </style>
 {% endblock %}
 
@@ -40,6 +43,7 @@
                             <div class="row g0">
                                 <div class="col-md-10 d-flex align-items-center">
                                     <div class="card-body">
+                                        <span class="handle">&#9776;</span>
                                         <h5 class="card-title"><input
                                                 type="checkbox"
                                                 class="form-switch"
@@ -56,6 +60,12 @@
                                             {% empty %}
                                                 No tags
                                             {% endfor %}
+                                        </p>
+                                        <p class="card-text">
+                                            <button class="btn btn-secondary btn-sm move-to-top"><i class="bi bi-chevron-bar-up" aria-label="Move to top"></i></button>
+                                            <button class="btn btn-secondary btn-sm move-up"><i class="bi bi-chevron-up" aria-label="Move up"></i></button>
+                                            <button class="btn btn-secondary btn-sm move-down"><i class="bi bi-chevron-down" aria-label="Move down"></i></button>
+                                            <button class="btn btn-secondary btn-sm move-to-bottom"><i class="bi bi-chevron-bar-down" aria-label="Move to bottom"></i></button>
                                         </p>
                                     </div>
                                 </div>

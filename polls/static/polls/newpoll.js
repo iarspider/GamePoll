@@ -53,11 +53,15 @@ function init_new_poll() {
         if (gameItem.closest("#allGamesList").length) {
             gameItem.appendTo("#selectedGamesList");
             $(this).text("Del");
+            $(this).removeClass("ml-auto");
+            $(this).addClass("mr-auto");
             selectedGameIds.push(gameId);
         } else {
             // Del list
             gameItem.appendTo("#allGamesList");
             $(this).text("Add");
+            $(this).addClass("ml-auto");
+            $(this).removeClass("mr-auto");
             const index = selectedGameIds.indexOf(gameId);
             selectedGameIds.splice(index, 1);
         }

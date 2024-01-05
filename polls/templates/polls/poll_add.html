@@ -23,10 +23,13 @@
                     <h4>All Games</h4>
                     <ul id="allGamesList" class="list-group">
                         {% for game in games %}
-                            <li class="list-group-item" data-game-id="{{ game.steam_id }}">
-                                <img src="{{ game.small_logo_url }}" alt="{{ game.name }} Logo" class="img-thumbnail">
-                                {{ game.name }}
-                                <button type="button" class="btn btn-primary btn-sm move-btn">Add</button>
+                            <li class="list-group-item  d-flex justify-content-between align-items-center" data-game-id="{{ game.steam_id }}">
+                                <div>
+                                    <img src="{{ game.small_logo_url }}" alt="{{ game.name }} Logo" class="img-thumbnail">
+                                    {{ game.name }}
+                                    <button type="button" class="btn btn-primary btn-sm move-btn">Add</button>
+                                </div>
+                                <button type="button" class="btn btn-primary btn-sm move-btn ml-auto">Add</button>
                             </li>
                         {% endfor %}
                     </ul>

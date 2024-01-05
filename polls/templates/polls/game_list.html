@@ -1,6 +1,7 @@
 <!-- games_list.html -->
 
 {% extends 'polls/layout.html' %}
+{% load my_filters %}
 
 {% block content %}
     <div class="container mt-5">
@@ -42,61 +43,110 @@
             </div>
         {% endfor %}
 
-        <div class="pagination">
-      <span class="step-links">
-          {% if games.has_previous %}
-              <a href="?page=1">&laquo; first</a>
-              <a href="?page={{ games.previous_page_number }}">previous</a>
-          {% endif %}
-
-          <span class="current">
-              Page {{ games.number }} of {{ games.paginator.num_pages }}.
-          </span>
-
-          {% if games.has_next %}
-              <a href="?page={{ games.next_page_number }}">next</a>
-              <a href="?page={{ games.paginator.num_pages }}">last &raquo;</a>
-          {% endif %}
-      </span>
+        <div>
+            <nav aria-label="Page navigation" class="navbar navbar-expand-lg navbar-light bg-light p-3">
+                <ul class="pagination">
+                {% if games.has_previous %}
+                    <li class="page-item">
+                       <a class="page-link" href="?page=1" aria-label="First"><i class="bi bi-chevron-bar-left" aria-hidden="true"></i></a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link"
+                             href="?page={{ games.previous_page_number }}"
+                             aria-label="Previous">
+                                      <span aria-hidden="true"><i
+                                          class="bi bi-chevron-double-left"></i></span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="bi bi-chevron-bar-left" aria-hidden="true"></i></span>
+                    </li>
+                    <li class="page-item disabled">
+                          <span class="page-link" aria-label="Previous"
+                                aria-disabled="true">
+                              <span aria-hidden="true"><i
+                                  class="bi bi-chevron-double-left"></i></span>
+                          </span>
+                    </li>
+                {% endif %}
+                    {% for page in range %}
+                        {% if page|is_number %}
+                            <li class="page-item {% if games.number == page_no %}active{% endif %}">
+                                <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">{{ page }}</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if games.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ games.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true"><i class="bi bi-chevron-double-right"></i></span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}" aria-label="Last">
+                                <span aria-hidden="true"><i class="bi bi-chevron-bar-right"></i></span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link" aria-label="Next"
+                                  aria-disabled="true">
+                            <span aria-hidden="true"><i
+                                class="bi bi-chevron-double-right"></i></span>
+                            </span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link" aria-label="Last">
+                            <span aria-hidden="true"><i
+                                class="bi bi-chevron-bar-right"></i></span>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
         </div>
-    </div>
 
-    {% if can_edit %}
-        <!-- Delete Modal -->
-        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to delete this game?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <a href="#" class="btn btn-danger" id="deleteGameBtn">Delete</a>
+        {% if can_edit %}
+            <!-- Delete Modal -->
+            <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete this game?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <a href="#" class="btn btn-danger" id="deleteGameBtn">Delete</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+          </div>
+          <script>
+              document.addEventListener("DOMContentLoaded", function () {
+                  const deleteButtons = document.querySelectorAll('.delete-btn');
+                  const deleteGameBtn = document.getElementById('deleteGameBtn');
 
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                var deleteButtons = document.querySelectorAll('.delete-btn');
-                var deleteGameBtn = document.getElementById('deleteGameBtn');
-
-                deleteButtons.forEach(function (button) {
-                    button.addEventListener('click', function () {
-                        var gameId = button.getAttribute('data-game-id');
-                        // Set the href attribute of the Delete button in the modal
-                        deleteGameBtn.setAttribute('href', '{% url 'delete_game' %}' + gameId);
-                    });
-                });
-            });
-        </script>
+                  deleteButtons.forEach(function (button) {
+                      button.addEventListener('click', function () {
+                          const gameId = button.getAttribute('data-game-id');
+                          // Set the href attribute of the Delete button in the modal
+                          deleteGameBtn.setAttribute('href', '{% url 'delete_game' %}' + gameId);
+                      });
+                  });
+              });
+          </script>
     {% endif %}
 {% endblock %}
