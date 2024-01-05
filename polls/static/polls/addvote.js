@@ -133,4 +133,6 @@ function init_addvote() {
     $(".move-down").click(move_down_click);
     $(".move-to-top").click(move_to_top_click);
     $(".move-to-bottom").click(move_to_bottom_click);
+
+    updateButtonStatus();
 }
