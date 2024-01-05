@@ -1,101 +1,101 @@
 <!-- polls/templates/chart_combined.html -->
 {% extends "polls/layout.html" %}
 {% block styles %}
-  <style>
-      canvas {
-          max-width: 800px;
-          max-height: 600px;
-          margin: 20px;
-      }
-  </style>
+    <style>
+        canvas {
+            max-width: 800px;
+            max-height: 600px;
+            margin: 20px;
+        }
+    </style>
 {% endblock %}
 {% block scripts %}
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-      let animation_done = false;
-      let combinedChart = 0;
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let animation_done = false;
+        let combinedChart = 0;
 
-      function waitForAnimation() {
-          // Check if animation_done is true
-          if (animation_done) {
-              $("#export").prop("disabled", false).attr("href", combinedChart.toBase64Image()).attr("download", "chart.png");
-          } else {
-              // If not true, wait for a short interval and check again
-              setTimeout(waitForAnimation, 100);
-          }
-      }
-
-      document.addEventListener('DOMContentLoaded', function () {
-          const ctx = document.getElementById('combinedChart').getContext('2d');
-
-          const data = {
-              labels: [{% for pair in result %}"{{ pair.0 }}", {% endfor %}],
-              datasets: [
-                  {
-                      label: 'Votes (Bar Chart)',
-                      backgroundColor: 'rgba(13, 110, 253, 0.5)',
-                      borderColor: 'rgba(13, 110, 253, 1)',
-                      data: [{% for pair in result %}{{ pair.1 }}, {% endfor %}],
-                      type: 'bar', // Set chart type to bar
-                  },
-                  {
-                      label: 'Votes (Line Chart)',
-                      borderColor: 'rgba(220, 53, 69, 1)',
-                      data: [{% for pair in result_negative %}{{ pair.1 }}, {% endfor %}],
-                      fill: false,
-                      type: 'line', // Set chart type to line
-                  },
-              ],
-          };
-
-          const plugin = {
-            id: 'customCanvasBackgroundColor',
-            beforeDraw: (chart, args, options) => {
-              const {ctx} = chart;
-              ctx.save();
-              ctx.globalCompositeOperation = 'destination-over';
-              ctx.fillStyle = options.color || '#99ffff';
-              ctx.fillRect(0, 0, chart.width, chart.height);
-              ctx.restore();
+        function waitForAnimation() {
+            // Check if animation_done is true
+            if (animation_done) {
+                $("#export").prop("disabled", false).attr("href", combinedChart.toBase64Image()).attr("download", "chart.png");
+            } else {
+                // If not true, wait for a short interval and check again
+                setTimeout(waitForAnimation, 100);
             }
-          };
+        }
 
-          combinedChart = new Chart(ctx, {
-              type: 'bar', // Initial chart type (it will be combined)
-              data: data,
-              plugins: [plugin],
-              options: {
-                  plugins: {
-                      legend: {
-                          display: false
-                      },
-                      customCanvasBackgroundColor: {
-                        color: 'white',
-                      }
-                  },
-                  scales: {
-                      x: {
-                          beginAtZero: true,
-                      },
-                      y: {
-                          beginAtZero: true,
-                      },
-                  },
-                  animation: {
-                      onComplete: function () {
-                          animation_done = true;
-                      },
-                  },
-              }
-          });
+        document.addEventListener('DOMContentLoaded', function () {
+            const ctx = document.getElementById('combinedChart').getContext('2d');
 
-          waitForAnimation();
-      });
-  </script>
+            const data = {
+                labels: [{% for pair in result %}"{{ pair.0 }}", {% endfor %}],
+                datasets: [
+                    {
+                        label: 'Votes (Bar Chart)',
+                        backgroundColor: 'rgba(13, 110, 253, 0.5)',
+                        borderColor: 'rgba(13, 110, 253, 1)',
+                        data: [{% for pair in result %}{{ pair.1 }}, {% endfor %}],
+                        type: 'bar', // Set chart type to bar
+                    },
+                    {
+                        label: 'Votes (Line Chart)',
+                        borderColor: 'rgba(220, 53, 69, 1)',
+                        data: [{% for pair in result_negative %}{{ pair.1 }}, {% endfor %}],
+                        fill: false,
+                        type: 'line', // Set chart type to line
+                    },
+                ],
+            };
+
+            const plugin = {
+                id: 'customCanvasBackgroundColor',
+                beforeDraw: (chart, args, options) => {
+                    const {ctx} = chart;
+                    ctx.save();
+                    ctx.globalCompositeOperation = 'destination-over';
+                    ctx.fillStyle = options.color || '#99ffff';
+                    ctx.fillRect(0, 0, chart.width, chart.height);
+                    ctx.restore();
+                }
+            };
+
+            combinedChart = new Chart(ctx, {
+                type: 'bar', // Initial chart type (it will be combined)
+                data: data,
+                plugins: [plugin],
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        customCanvasBackgroundColor: {
+                            color: 'white',
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                        },
+                        y: {
+                            beginAtZero: true,
+                        },
+                    },
+                    animation: {
+                        onComplete: function () {
+                            animation_done = true;
+                        },
+                    },
+                }
+            });
+
+            waitForAnimation();
+        });
+    </script>
 {% endblock %}
 {% block content %}
-  <h1>Poll results for {{ poll_title }}</h1>
-  <canvas id="combinedChart"></canvas>
-  <a class="btn btn-primary" id="export" disabled>Export as PNG</a>
+    <h1>Poll results for {{ poll_title }}</h1>
+    <canvas id="combinedChart"></canvas>
+    <a class="btn btn-primary" id="export" disabled>Export as PNG</a>
 {% endblock %}
 

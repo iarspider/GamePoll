@@ -3,36 +3,40 @@
 {% extends 'polls/layout.html' %}
 
 {% block content %}
-  <div class="container mt-5">
-    <h2>{% if edit %}Edit Game{% else %}Add Game{% endif %}</h2>
+    <div class="container mt-5">
+        <h2>{% if edit %}Edit Game{% else %}Add Game{% endif %}</h2>
 
-    {% if edit and game.logo_url %}
-      <img src="{{ game.logo_url }}" alt="Game Logo" class="img-fluid mb-3">
-    {% endif %}
+        {% if edit and game.logo_url %}
+            <img src="{{ game.logo_url }}" alt="Game Logo" class="img-fluid mb-3">
+        {% endif %}
 
-    <form action="{% if edit %}{% url 'game_edit' game.id %}{% else %}{% url 'game_add' %}{% endif %}" method="post" id="addGameForm">
-      {% csrf_token %}
-      <div class="form-group">
-        <label for="name">Name:</label>
-        <input type="text" class="form-control" id="name" name="name" value="{{ game.name }}" required>
-      </div>
-      <div class="form-group">
-        <label for="steam_id">Steam ID:</label>
-        <input type="number" class="form-control" id="steam_id" name="steam_id" value="{{ game.steam_id }}" {% if edit %}readonly{% endif %} required>
-      </div>
-      <div class="form-group">
-        <label for="description">Description:</label>
-        <textarea class="form-control" id="description" name="description" required>{{ game.description }}</textarea>
-      </div>
-      <div class="form-group">
-        <label for="alt_url">Alternate URL:</label>
-        <input type="url" class="form-control" id="alt_url" name="alt_url" value="{{ game.alt_url }}" required>
-      </div>
-      <div class="form-group">
-        <label for="logo_url">Logo URL:</label>
-        <input type="url" class="form-control" id="logo_url" name="logo_url" value="{{ game.logo_url }}" required>
-      </div>
-      <button type="submit" class="btn btn-primary">{% if edit %}Edit Game{% else %}Add Game{% endif %}</button>
-    </form>
-  </div>
+        <form action="{% if edit %}{% url 'game_edit' game.id %}{% else %}{% url 'game_add' %}{% endif %}" method="post"
+              id="addGameForm">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ game.name }}" required>
+            </div>
+            <div class="form-group">
+                <label for="steam_id">Steam ID:</label>
+                <input type="number" class="form-control" id="steam_id" name="steam_id" value="{{ game.steam_id }}"
+                       {% if edit %}readonly{% endif %} required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea class="form-control" id="description" name="description"
+                          required>{{ game.description }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="alt_url">Alternate URL:</label>
+                <input type="url" class="form-control" id="alt_url" name="alt_url" value="{{ game.alt_url }}" required>
+            </div>
+            <div class="form-group">
+                <label for="logo_url">Logo URL:</label>
+                <input type="url" class="form-control" id="logo_url" name="logo_url" value="{{ game.logo_url }}"
+                       required>
+            </div>
+            <button type="submit" class="btn btn-primary">{% if edit %}Edit Game{% else %}Add Game{% endif %}</button>
+        </form>
+    </div>
 {% endblock %}

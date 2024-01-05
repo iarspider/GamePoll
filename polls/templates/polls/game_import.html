@@ -3,30 +3,30 @@
 {% extends 'polls/layout.html' %}
 
 {% block content %}
-  <div class="container mt-5">
-    <h2>Import Game</h2>
-    <form action="{% url 'game_import' %}" method="post" id="importGameForm">
-      {% csrf_token %}
+    <div class="container mt-5">
+        <h2>Import Game</h2>
+        <form action="{% url 'game_import' %}" method="post" id="importGameForm">
+            {% csrf_token %}
 
-      <div id="gameInputs">
-        <div class="form-group">
-          <label for="steam_ids">Steam ID:</label>
-          <input class="form-control" name="steam_ids" required>
-        </div>
-      </div>
+            <div id="gameInputs">
+                <div class="form-group">
+                    <label for="steam_ids">Steam ID:</label>
+                    <input class="form-control" name="steam_ids" required>
+                </div>
+            </div>
 
-      <button type="button" class="btn btn-success" onclick="addGameInput()">+</button>
-      <button type="submit" class="btn btn-primary">Import</button>
-      <a href="{% url 'game_list' %}" class="btn btn-secondary">Cancel</a>
-    </form>
-  </div>
+            <button type="button" class="btn btn-success" onclick="addGameInput()">+</button>
+            <button type="submit" class="btn btn-primary">Import</button>
+            <a href="{% url 'game_list' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
 
-  <script>
-    function addGameInput() {
-      const container = document.getElementById('gameInputs');
-      const newInput = document.createElement('div');
-      newInput.innerHTML = '<div class="form-group"><label for="steam_id">Steam ID:</label><input class="form-control" name="steam_ids" required></div>';
-      container.appendChild(newInput);
-    }
-  </script>
+    <script>
+        function addGameInput() {
+            const container = document.getElementById('gameInputs');
+            const newInput = document.createElement('div');
+            newInput.innerHTML = '<div class="form-group"><label for="steam_id">Steam ID:</label><input class="form-control" name="steam_ids" required></div>';
+            container.appendChild(newInput);
+        }
+    </script>
 {% endblock %}

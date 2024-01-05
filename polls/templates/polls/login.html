@@ -1,12 +1,12 @@
 {% extends 'polls/layout.html' %}
 
 {% block styles %}
-<style>
-    .btn-twitch {
-  background-color: #6441A5 !important;
-  border-color: #6441A5 !important;
-}
-</style>
+    <style>
+        .btn-twitch {
+            background-color: #6441A5 !important;
+            border-color: #6441A5 !important;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
@@ -17,6 +17,6 @@
         <a class="btn btn-primary block full-width m-b btn-twitch" href="{% url "social:begin" "twitch" %}">
             <i class="bi bi-twitch"></i> Login with Twitch
         </a>
-      <hr>
+        <hr>
     </div>
 {% endblock %}

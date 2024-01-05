@@ -1,25 +1,25 @@
 {% extends "polls/layout.html" %}
 {% block title %}Detailed poll results{% endblock %}
 {% block content %}
-<table class="table">
-  <thead>
-    <tr>
-      {% for key in keys %}
-      <th scope="col">{{ key }}</th>
-      {% endfor %}
-    </tr>
-  </thead>
-  <tbody>
-  {% for row in results %}
-    <tr>
-      <th scope="row">{{ row.login }}</th>
-      {% for key,val in row.items %}
-        {% if key != "login" %}
-      <td>{{ val }}</td>
-        {% endif %}
-      {% endfor %}
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
+    <table class="table">
+        <thead>
+        <tr>
+            {% for key in keys %}
+                <th scope="col">{{ key }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in results %}
+            <tr>
+                <th scope="row">{{ row.login }}</th>
+                {% for key,val in row.items %}
+                    {% if key != "login" %}
+                        <td>{{ val }}</td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

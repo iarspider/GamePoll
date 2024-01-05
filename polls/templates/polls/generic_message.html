@@ -3,52 +3,54 @@
 {% extends "polls/layout.html" %}
 
 {% block content %}
-  <div class="container mt-5">
-    <div class="card">
-      <div class="card-body text-center">
-        <h2 class="card-title">{% block title %}{% endblock %}</h2>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-body text-center">
+                <h2 class="card-title">{% block title %}{% endblock %}</h2>
 
-        <!-- Icon container -->
-        <div class="icon-container">
-          <span class="icon">{% block icon %}{% endblock %}</span>
+                <!-- Icon container -->
+                <div class="icon-container">
+                    <span class="icon">{% block icon %}{% endblock %}</span>
+                </div>
+
+                <p class="card-text">{% block message %}{% endblock %}</p>
+
+                {% block return %}
+                    <p class="card-text"><a href="{% url 'poll_list' %}" class="btn btn-primary">Return to List
+                        Polls</a></p>{% endblock %}
+            </div>
         </div>
-
-        <p class="card-text">{% block message %}{% endblock %}</p>
-
-        {% block return %}<p class="card-text"><a href="{% url 'poll_list' %}" class="btn btn-primary">Return to List Polls</a></p>{% endblock %}
-      </div>
     </div>
-  </div>
 {% endblock %}
 {% block styles %}
-  <style>
-    .icon-container {
-      text-align: center;
-      margin-top: 20px;
-    }
+    <style>
+        .icon-container {
+            text-align: center;
+            margin-top: 20px;
+        }
 
-    .icon {
-      font-size: 48px;
-      color: {%block icon_color %}green{%endblock%}; /* Use a variable for the icon color */
-    }
-  </style>
+        .icon {
+            font-size: 48px;
+            color: {%block icon_color %}green{%endblock%}; /* Use a variable for the icon color */
+        }
+    </style>
 {% endblock %}
 
 {% block scripts %}
-  <script>
-  document.addEventListener("DOMContentLoaded", function () {
-      // Countdown timer
-      let seconds = 5;
-      const timerInterval = setInterval(function () {
-        $('#timer').text(seconds);
-        seconds--;
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Countdown timer
+            let seconds = 5;
+            const timerInterval = setInterval(function () {
+                $('#timer').text(seconds);
+                seconds--;
 
-        if (seconds < 0) {
-          clearInterval(timerInterval);
-          // Redirect to the specified URL
-          window.location.href = "{% url "poll_list" %}";
-        }
-      }, 1000);
-    });
-  </script>
+                if (seconds < 0) {
+                    clearInterval(timerInterval);
+                    // Redirect to the specified URL
+                    window.location.href = "{% url "poll_list" %}";
+                }
+            }, 1000);
+        });
+    </script>
 {% endblock %}
