@@ -37,10 +37,13 @@ def poll_list(request):
 
 
 def login_view(request):
-    return render(
-        request,
-        "polls/login.html",
-    )
+    if not request.user.is_authenticated:
+        return render(
+            request,
+            "polls/login.html",
+        )
+    else:
+        return redirect("/accounts/profile/")
 
 
 @login_required

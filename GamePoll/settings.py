@@ -9,9 +9,10 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
-from pathlib import Path
 import os
+from pathlib import Path
+from platform import platform
+
 from dotenv import dotenv_values
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -30,6 +31,10 @@ DEBUG = False
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "vote.iarazumov.com"]
 
@@ -155,7 +160,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SOCIAL_AUTH_TWITCH_SCOPE = ["user:read:subscriptions"]
 SOCIAL_AUTH_TWITCH_KEY = config.get("SOCIAL_AUTH_TWITCH_KEY")
 SOCIAL_AUTH_TWITCH_SECRET = config.get("SOCIAL_AUTH_TWITCH_SECRET")
-SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = False
 BROADCASTER_ID = "48432016"
 
 LOGGING = {
@@ -165,7 +170,9 @@ LOGGING = {
         "file": {
             "level": "DEBUG",
             "class": "logging.FileHandler",
-            "filename": "/var/log/django/debug.log",
+            "filename": "/var/log/django/debug.log"
+            if platform().lower().startswith("Linux")
+            else "debug.log",
             "formatter": "verbose",
         },
         "console": {

@@ -3,3 +3,4 @@ social-auth-app-django
 social-auth-core
 python-dotenv
 gunicorn
+black
