@@ -79,9 +79,13 @@ function exclude_click() {
 // Update button status based on item position
 function updateButtonStatus() {
     $(".move-to-top, .move-up, .move-down, .move-to-bottom").prop("disabled", false);
+    $(".move-to-top, .move-up, .move-down, .move-to-bottom").removeClass("disabled");
+    $(".move-to-top, .move-up, .move-down, .move-to-bottom").removeClass("disabled");
 
     $(".move-to-top:first, .move-up:first").prop("disabled", true);
+    $(".move-to-top:first, .move-up:first").addClass("disabled");
     $(".move-down:last, .move-to-bottom:last").prop("disabled", true);
+    $(".move-down:last, .move-to-bottom:last").addClass("disabled");
 }
 
 // Function to handle moving an item up
