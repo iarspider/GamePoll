@@ -14,6 +14,7 @@
         }
         .handle {
             cursor: move;
+            padding-right: 1.0em;
         }
     </style>
 {% endblock %}
@@ -43,8 +44,7 @@
                             <div class="row g0">
                                 <div class="col-md-10 d-flex align-items-center">
                                     <div class="card-body">
-                                        <span class="handle">&#9776;</span>
-                                        <h5 class="card-title"><input
+                                        <h5 class="card-title"><span class="handle">☰</span>&nbsp;<input
                                                 type="checkbox"
                                                 class="form-switch"
                                                 name="game_{{ game.steam_id }}"
