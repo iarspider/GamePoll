@@ -86,14 +86,14 @@ function init_addvote() {
 
     // Exclusion checkboxes functionallity
     $('input[name^="game_"]').click(exclude_click);
+
+/*
     const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
     // Show/hide buttons based on touch support
     if (isTouchDevice) {
-        $("h1")[0].innerHTML += " - Touch"
         $(".btn-move-up, .btn-move-down, .btn-move-top, .btn-move-bottom").show();
         // $(".handle").hide();
     } else {
-        $("h1")[0].innerHTML += " - No touch    "
         $(".btn-move-up, .btn-move-down, .btn-move-top, .btn-move-bottom").hide();
         // $(".handle").show();
     }
@@ -133,4 +133,5 @@ function init_addvote() {
                 break;
         }
     }
+*/
 }
