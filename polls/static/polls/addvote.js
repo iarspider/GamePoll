@@ -1,7 +1,8 @@
 function shuffle_click() {
-        $(".card").not(".excluded").sort(function () {
-          return Math.random() - 0.5;
-        }).appendTo("#sortable-list");}
+    $(".card").not(".excluded").sort(function () {
+        return Math.random() - 0.5;
+    }).appendTo("#sortable-list");
+}
 
 function reset_click() {
     const cards = Array.from($("#sortable-list .card"));
@@ -22,6 +23,7 @@ function reset_click() {
     // Mark all games as included
     $("#sortable-list input[type='checkbox']").prop("checked", true);
 }
+
 function cast_click(event) {
     event.preventDefault();
     const apiEndpoint = $(event.target).attr('action');
@@ -30,8 +32,7 @@ function cast_click(event) {
     const voteData = {
         game_order: $("#sortable-list .card").map(function () {
             return $(this).data("stream-id");
-        }).get(),
-        game_states: {}
+        }).get(), game_states: {}
     };
 
     $(".card").each(function () {
@@ -44,29 +45,25 @@ function cast_click(event) {
     voteData.bee_checkbox = $("input[name='bee_checkbox']").prop("checked");
 
     fetch(apiEndpoint, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-            'X-CSRFToken': csrftoken,
-        },
-        body: JSON.stringify(voteData),
-        mode: 'same-origin'
+        method: "POST", headers: {
+            "Content-Type": "application/json; charset=utf-8", 'X-CSRFToken': csrftoken,
+        }, body: JSON.stringify(voteData), mode: 'same-origin'
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("Network response was not ok");
-        }
-        if (response.redirected) {
-          // Perform the redirect
-          window.location.href = response.url;
-        } else {
-          // Handle other successful responses
-          throw new Error();
-        }
-    })
-    .catch(error => {
-        console.error("Error casting vote:", error);
-    });
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            if (response.redirected) {
+                // Perform the redirect
+                window.location.href = response.url;
+            } else {
+                // Handle other successful responses
+                throw new Error();
+            }
+        })
+        .catch(error => {
+            console.error("Error casting vote:", error);
+        });
 }
 
 function exclude_click() {
@@ -76,7 +73,7 @@ function exclude_click() {
 
 function init_addvote() {
     // Make the game list reorderable
-    $("#sortable-list").sortable();
+    $("#sortable-list").sortable({handle: ".handle"})
 
     // Shuffle button functionality
     $("#shuffleButton").click(shuffle_click);

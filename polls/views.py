@@ -5,7 +5,7 @@ import re
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 
 from polls.models import TwitchUser, Poll, Vote, GameVote, Game, PollBlock
 
@@ -22,7 +22,7 @@ def poll_list(request):
     if request.user.is_superuser:
         paginator = Paginator(Poll.objects.all(), 10, allow_empty_first_page=True)
     else:
-        gmtnow = datetime.datetime.now(datetime.timezone.utc)
+        gmtnow = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
         paginator = Paginator(
             Poll.objects.filter(start_date__lt=gmtnow, closed=False)
             .exclude(pollblock__person=request.user)

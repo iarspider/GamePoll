@@ -4,110 +4,118 @@
 {% load static %}
 
 {% block scripts %}
-    <script src="{% static "polls/addvote.js" %}"></script>
+  <script src="{% static "polls/addvote.js" %}"></script>
 {% endblock %}
 
 {% block styles %}
-    <style>
-        .card.excluded {
-            filter: grayscale(100%);
-        }
-    </style>
+  <style>
+      .card.excluded {
+          filter: grayscale(100%);
+      }
+  </style>
 {% endblock %}
 
 {% block title %} {{ poll.title }} - GamePoll {% endblock %}
 
 {% block content %}
-    <form id="voteForm" method="post" action="{% url 'vote_add' poll_id=poll.id %}">
-        {% csrf_token %}
+  <form id="voteForm" method="post" action="{% url 'vote_add' poll_id=poll.id %}">
+    {% csrf_token %}
 
-        <!-- Game List -->
-        <div class="row">
-            <div class="col-md-2"></div>
-            <div class="col-md-8">
-                <h1>{{ poll.title }}</h1>
-                <hr/>
-                <p>Reorder the games as you like: the higher the game is in this list,
-                    the more interested you are in it. Uncheck the checkbox next to a game if you
-                    are not intersted in a given game.</p>
-                <p>Check 🦉, 🧀 and/or 🐝 checkboxes if you don't have a strong
-                    preference.</p>
-                <hr/>
-                <div id="sortable-list">
-                    {% for game in poll.games.all %}
-                        <div class="card mb3"
-                             data-stream-id="{{ game.steam_id }}">
-                            <div class="row g0">
-                                <div class="col-md-10 d-flex align-items-center">
-                                    <div class="card-body">
-                                        <h5 class="card-title"><input
-                                                type="checkbox"
-                                                class="form-switch"
-                                                name="game_{{ game.steam_id }}"
-                                                checked aria-label="Included"> &nbsp; <a
-                                                href="{{ game.alt_url }}"
-                                                target="_blank">{{ game.name }}</a>
-                                        </h5>
-                                        <p class="card-text">{{ game.description }}</p>
-                                        <p class="card-text">Tags:
-                                            {% for tag in game.gametag_set.all %}
-                                                <span
-                                                        class="badge rounded-pill bg-secondary">{{ tag.tag.name }}</span>
-                                            {% empty %}
-                                                No tags
-                                            {% endfor %}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="col-md-2 d-flex align-items-center"><img
-                                        src="{{ game.logo_url }}"
-                                        alt="{{ game.name }}"
-                                        class="img-fluid rounded-start"></div>
-                            </div>
-                        </div>
-                    {% endfor %}
+    <!-- Game List -->
+    <div class="row">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+        <h1>{{ poll.title }}</h1>
+        <hr/>
+        <p>Упорядочите игры перетаскиванием за <i class="bi bi-list"></i>: чем выше в
+          списке игра, тем интереснее вам её увидеть. Уберите галочку у тех игр, которые
+          вам совершенно не интересны</p>
+        <p>Используйте переключатели 🦉, 🧀 и/или 🐝, если вам в принципе всё равно что
+          смотреть.</p>
+        <hr/>
+        <div id="sortable-list">
+          {% for game in poll.games.all %}
+            <div class="card mb3"
+                 data-stream-id="{{ game.steam_id }}">
+              <div class="row g0">
+                <div class="handle col-md-1 d-flex align-items-center"
+                     style="width: unset !important; cursor: move;">
+                  <i
+                      class="bi bi-list"></i></div>
+                <div class="col-md-8 d-flex align-items-center">
+                  <div class="card-body">
+                    <h5 class="card-title"><input
+                        type="checkbox"
+                        class="form-switch"
+                        name="game_{{ game.steam_id }}"
+                        checked aria-label="Included"/> &nbsp; <a
+                        href="{{ game.alt_url }}"
+                        target="_blank">{{ game.name }}</a>
+                    </h5>
+                    <p class="card-text d-none d-md-block">{{ game.description }}</p>
+                    <p class="card-text d-none d-md-block">Tags:
+                      {% for tag in game.gametag_set.all %}
+                        <span
+                            class="badge rounded-pill bg-secondary">{{ tag.tag.name }}</span>
+                      {% empty %}
+                        No tags
+                      {% endfor %}
+                    </p>
+                  </div>
                 </div>
-                <div class="mt-2">
-                    <!-- Emoji Checkboxes -->
-                    <div class="form-check form-switch">
-                        <label class="form-check-label" style="font-size: 200%;"><input type="checkbox"
-                                                                                        name="owl_checkbox"
-                                                                                        class="form-check-input">
-                            🦉</label>
-                    </div>
-                    <div class="form-check form-switch">
-                        <label class="form-check-label" style="font-size: 200%;"><input type="checkbox"
-                                                                                        name="cheese_checkbox"
-                                                                                        class="form-check-input">
-                            🧀</label>
-                    </div>
-                    <div class="form-check form-switch">
-                        <label class="form-check-label" style="font-size: 200%;"><input type="checkbox"
-                                                                                        name="bee_checkbox"
-                                                                                        class="form-check-input">
-                            🐝</label>
-                    </div>
+                <div class="col-md-2 align-items-center d-none d-md-flex"><img
+                    src="{{ game.logo_url }}"
+                    alt="{{ game.name }}"
+                    class="img-fluid rounded-start">
                 </div>
-                <br/>
-                <div>
-                    <!-- Shuffle and Cast Buttons -->
-                    <button type="button" class="btn btn-warning" id="shuffleButton">
-                        Shuffle
-                    </button>
-                    <button type="submit" class="btn btn-primary" id="castVoteButton">
-                        Cast
-                        Vote
-                    </button>
-                    <button type="button" class="btn btn-secondary"
-                            onclick="location.href='{% url 'poll_list' %}'">Cancel
-                    </button>
-                </div>
+              </div>
             </div>
-            <div class="col-md-2"></div>
+          {% endfor %}
         </div>
-    </form>
+        <div class="mt-2 ms-5">
+          <!-- Emoji Checkboxes -->
+          <div class="form-check form-switch form-check-inline me-5">
+            <label class="form-check-label" style="font-size: 200%;"><input
+                type="checkbox"
+                name="owl_checkbox"
+                class="form-check-input"/>
+              🦉</label>
+          </div>
+          <div class="form-check form-switch form-check-inline mx-5">
+            <label class="form-check-label" style="font-size: 200%;"><input
+                type="checkbox"
+                name="cheese_checkbox"
+                class="form-check-input"/>
+              🧀</label>
+          </div>
+          <div class="form-check form-switch form-check-inline ms-5">
+            <label class="form-check-label" style="font-size: 200%;"><input
+                type="checkbox"
+                name="bee_checkbox"
+                class="form-check-input"/>
+              🐝</label>
+          </div>
+        </div>
+        <br/>
+        <div>
+          <!-- Shuffle and Cast Buttons -->
+          <button type="button" class="btn btn-warning" id="shuffleButton">
+            Shuffle
+          </button>
+          <button type="submit" class="btn btn-primary" id="castVoteButton">
+            Cast
+            Vote
+          </button>
+          <button type="button" class="btn btn-secondary"
+                  onclick="location.href='{% url 'poll_list' %}'">Cancel
+          </button>
+        </div>
+      </div>
+      <div class="col-md-2"></div>
+    </div>
+  </form>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", init_addvote);
-    </script>
+  <script>
+      document.addEventListener("DOMContentLoaded", init_addvote);
+  </script>
 {% endblock %}
