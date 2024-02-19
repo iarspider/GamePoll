@@ -71,15 +71,15 @@ def profile(request):
     )
 
 
-# @login_required
+@login_required
 def poll_vote(request, poll_id):
     try:
         poll = Poll.objects.get(pk=poll_id)
     except Poll.DoesNotExist:
         return render(request, "polls/poll_not_found.html")
 
-    # if PollBlock.objects.filter(person=request.user, poll=poll).count() > 0:
-    #     return render(request, "polls/second_vote_attempt.html")
+    if PollBlock.objects.filter(person=request.user, poll=poll).count() > 0:
+        return render(request, "polls/second_vote_attempt.html")
 
     if poll.closed:
         return render(request, "polls/poll_locked.html")
