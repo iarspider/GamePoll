@@ -34,7 +34,7 @@ HTTP_MODE_SUPPORT = False
 SESSION_COOKIE_SECURE = HTTP_MODE_SUPPORT
 CSRF_COOKIE_SECURE = HTTP_MODE_SUPPORT
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "bote.iarazumov.com"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "vote.iarazumov.com"]
 
 
 # Application definition
