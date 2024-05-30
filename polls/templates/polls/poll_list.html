@@ -31,7 +31,7 @@
                         {% endfor %}
                     </td>
                     <td class="start-date"
-                        data-utc="{{ poll.start_date }}">{{ poll.start_date|date:"DATETIME_FORMAT" }}</td>
+                        data-utc="{{ poll.start_date|date:"U" }}">{{ poll.start_date|date:"DATETIME_FORMAT" }}</td>
                     <td><a href="{% url "poll_stats" poll.id %}">📊</a></td>
                     {% if request.user.is_superuser %}
                         <td><a href="{% url "poll_details" poll.id %}">Details</a></td>
@@ -66,7 +66,7 @@
             function convertTimezone() {
                 $('.start-date, .end-date').each(function () {
                     const utcDateString = $(this).data('utc');
-                    const utcDate = new Date(utcDateString);
+                    const utcDate = new Date(Number(utcDateString)*1000);
                     const localDate = utcDate.toLocaleString();
                     $(this).text(localDate);
                 });
