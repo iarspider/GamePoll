@@ -1,0 +1,9 @@
+<!-- polls/templates/retract_vote.html -->
+
+{% extends "polls/generic_message.html" %}
+
+{% block title %}Голос отменён{% endblock %}
+{% block icon %}ℹ{% endblock %}
+{% block icon_color %}#4CAF50{% endblock %}
+{% block message %}Ваше участие в голосовании "{{ poll.title }}" отменено, вы можете снова проголосовать.{% endblock %}
+{% block return %}<p class="card-text"><a href="{% url 'vote_add' poll.id %}" class="btn btn-secondary">Голосовать</a><a href="{% url 'poll_list' %}" class="btn btn-secondary">К списку голосований</a></p>{% endblock %}

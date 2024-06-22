@@ -181,3 +181,40 @@ def poll_stats(request, poll_id):
 def logout(request):
     auth_logout(request)
     return redirect("login")
+
+
+@login_required
+def poll_unvote(request, poll_id):
+    try:
+        poll = Poll.objects.get(pk=poll_id)
+    except Poll.DoesNotExist:
+        return render(request, "polls/poll_not_found.html")
+
+    if poll.closed:
+        return render(request, "polls/poll_locked.html")
+
+    try:
+        poll_block = PollBlock.objects.get(person=request.user, poll=poll)
+    except PollBlock.DoesNotExist:
+        return render(request, "polls/not_voted.html", context={"poll": poll})
+
+    if request.method != "POST":
+        return render(request, "polls/generic_message.html")
+    else:
+        poll_block.delete()
+        Vote.objects.filter(poll=poll, person=request.user).delete()
+
+    return redirect("poll_unvote_ok", poll_id=poll_id)
+
+
+@login_required
+def poll_unvote_ok(request, poll_id):
+    try:
+        poll = Poll.objects.get(pk=poll_id)
+    except Poll.DoesNotExist:
+        return render(request, "polls/poll_not_found.html")
+
+    if poll.closed:
+        return render(request, "polls/poll_locked.html")
+
+    return render(request, "polls/retract_vote_ok.html", context={"poll": poll})

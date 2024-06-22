@@ -33,4 +33,6 @@ urlpatterns = [
     path("poll/", include(poll_patterns)),
     path("vote/<int:poll_id>", views.poll_vote, name="vote_add"),
     path("vote/ok", views.poll_vote_ok, name="vote_ok"),
+    path("unvote/<int:poll_id>", views.poll_unvote, name="poll_unvote"),
+    path("unvote_ok/<int:poll_id>", views.poll_unvote_ok, name="poll_unvote_ok")
 ]
