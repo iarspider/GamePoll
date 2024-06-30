@@ -57,7 +57,7 @@ def profile(request):
 
     polls = []
     for lock in PollBlock.objects.filter(person=user):
-        polls.append(lock.poll.title)
+        polls.append(lock.poll)
 
     return render(
         request,
