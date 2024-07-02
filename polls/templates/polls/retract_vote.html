@@ -6,4 +6,4 @@
 {% block icon %}⚠{% endblock %}
 {% block icon_color %}#FFD700{% endblock %}
 {% block message %}Отменить Ваше участие в голосовании "{{ poll.title }}"?{% endblock %}
-{% block return %}<p class="card-text"><form method="POST" action="{% url 'poll_unvote' poll_id=poll.id %}"> {% csrf_token %}<button type="submit" class="btn btn-danger">Да</button></form><a href="{% url 'poll_list' %}" class="btn btn-secondary">К списку голосований</a></p>{% endblock %}
+{% block return %}<p class="card-text"><form method="POST" action="{% url 'poll_unvote' poll.id %}"> {% csrf_token %}<button type="submit" class="btn btn-danger">Да</button></form><a href="{% url 'poll_list' %}" class="btn btn-secondary">К списку голосований</a></p>{% endblock %}

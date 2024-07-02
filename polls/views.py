@@ -199,7 +199,7 @@ def poll_unvote(request, poll_id):
         return render(request, "polls/not_voted.html", context={"poll": poll})
 
     if request.method != "POST":
-        return render(request, "polls/retract_vote.html")
+        return render(request, "polls/retract_vote.html", context={"poll": poll})
     else:
         poll_block.delete()
         Vote.objects.filter(poll=poll, person=request.user).delete()
