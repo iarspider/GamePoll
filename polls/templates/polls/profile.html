@@ -5,11 +5,11 @@
     <hr>
     <table>
         <tr>
-            <td>Username</td>
+            <td>Имя пользователя</td>
             <td>{{ user.username }}</td>
         </tr>
         <tr>
-            <td>Display name</td>
+            <td>Отображаемое имя</td>
             <td> {{ user.first_name }}</td>
         </tr>
         <tr>
@@ -22,7 +22,7 @@
                 <td>{{ twitch_user }}</td>
             </tr>
             <tr>
-                <td>Subscriber</td>
+                <td>Статус подписки</td>
                 <td>{% if twitch_user.subscribed %} ✅ {% else %} ❌ {% endif %} </td>
             </tr>
         {% else %}
@@ -41,12 +41,12 @@
 
     <ul>
         {% for poll in polls %}
-            <li>{{ poll }}</li>
+            <li>{{ poll }} {% if not poll.closed %} <a href="{% url "poll_unvote" poll.id %}">Переголосовать</a>{% endif %} </li>
         {% empty %}
             <li>No votes so far</li>
         {% endfor %}
     </ul>
 
-    <h2><a href="{% url "poll_list" %}">Go to poll list</a></h2>
+    <h2><a href="{% url "poll_list" %}">К списку голосований</a></h2>
 
 {% endblock %}

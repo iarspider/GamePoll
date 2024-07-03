@@ -1,0 +1,27 @@
+<!-- polls/templates/retract_vote.html -->
+
+{% extends "polls/generic_message.html" %}
+
+{% block title %}Голос отменён{% endblock %}
+{% block icon %}ℹ{% endblock %}
+{% block icon_color %}#4CAF50{% endblock %}
+{% block message %}Ваше участие в голосовании "{{ poll.title }}" отменено. Вы будете автоматически перенаправлены на странцу голосования через <span id="timer">5</span> с.{% endblock %}
+{% block return %}<p class="card-text"><a href="{% url 'vote_add' poll.id %}" class="btn btn-primary">Голосовать</a><a href="{% url 'poll_list' %}" class="btn btn-secondary">К списку голосований</a></p>{% endblock %}
+{% block scripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Countdown timer
+            let seconds = 5;
+            const timerInterval = setInterval(function () {
+                $('#timer').text(seconds);
+                seconds--;
+
+                if (seconds < 0) {
+                    clearInterval(timerInterval);
+                    // Redirect to the specified URL
+                    window.location.href = "{% url 'vote_add' poll.id %}";
+                }
+            }, 1000);
+        });
+    </script>
+{% endblock %}
