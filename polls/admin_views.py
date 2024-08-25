@@ -108,7 +108,7 @@ def game_list(request):
     page_obj = paginator.get_page(page_no)
 
     return render(
-        request, "polls/game_list.html", context={"games": page_obj, "can_edit": False}
+        request, "polls/game_list.html", context={"games": page_obj, "can_edit": True}
     )
 
 
@@ -195,7 +195,8 @@ def poll_add(request):
 
         return HttpResponse(reverse("poll_list"))
 
-    return render(request, "polls/poll_add.html", context={"games": Game.objects.all()})
+    return render(request, "polls/poll_add.html",
+                  context={"games": Game.objects.filter(completed=False).order_by("-id")})
 
 
 @login_required
@@ -237,8 +238,7 @@ def poll_detailed_stats(request, poll_id):
         keys.append(game.name)
 
     for vote in poll.vote_set.all():
-        tmp = {}
-        tmp["login"] = vote.person.first_name
+        tmp = {"login": vote.person.first_name}
         for k in ("owl", "bee", "cheese"):
             tmp[k] = "✅" if getattr(vote, k) else "❌"
         tmp["weight"] = vote.weight

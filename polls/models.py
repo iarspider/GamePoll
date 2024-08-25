@@ -10,6 +10,7 @@ class Game(models.Model):
     alt_url = models.URLField(max_length=255)
     logo_url = models.URLField(max_length=255, blank=True, null=True)
     small_logo_url = models.URLField(max_length=255, blank=True, null=True)
+    completed = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.name} (#{self.steam_id})"
