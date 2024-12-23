@@ -61,7 +61,7 @@ def game_add(request):
             steam_id=steam_id,
             description=description,
             alt_url=alt_url,
-            logo_url=logo_url,
+            small_logo_url=logo_url,
         )
         game.save()
 
@@ -189,7 +189,7 @@ def poll_add(request):
         poll.save()
 
         for game_id in data["selectedIds"]:
-            poll.games.add(Game.objects.get(steam_id=game_id))
+            poll.games.add(Game.objects.get(id=game_id))
 
         poll.save()
 

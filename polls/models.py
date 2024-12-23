@@ -13,7 +13,10 @@ class Game(models.Model):
     completed = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.name} (#{self.steam_id})"
+        res = f"{self.name}"
+        if self.steam_id > 0:
+            res += f" (#{self.steam_id})"
+        return res
 
 
 class Poll(models.Model):
