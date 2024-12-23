@@ -14,7 +14,7 @@ class Game(models.Model):
 
     def __str__(self):
         res = f"{self.name}"
-        if self.steam_id > 0:
+        if int(self.steam_id) > 0:
             res += f" (#{self.steam_id})"
         return res
 
