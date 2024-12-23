@@ -84,19 +84,19 @@
             </div>
         </div>
 
-        <script>
+        <!--script>
             document.addEventListener("DOMContentLoaded", function () {
-                var deleteButtons = document.querySelectorAll('.delete-btn');
-                var deleteGameBtn = document.getElementById('deleteGameBtn');
+                const deleteButtons = document.querySelectorAll('.delete-btn');
+                const deleteGameBtn = document.getElementById('deleteGameBtn');
 
                 deleteButtons.forEach(function (button) {
                     button.addEventListener('click', function () {
-                        var gameId = button.getAttribute('data-game-id');
+                        const gameId = button.getAttribute('data-game-id');
                         // Set the href attribute of the Delete button in the modal
                         deleteGameBtn.setAttribute('href', '{% url 'delete_game' %}' + gameId);
                     });
                 });
             });
-        </script>
+        </script-->
     {% endif %}
 {% endblock %}
