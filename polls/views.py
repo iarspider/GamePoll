@@ -114,7 +114,7 @@ def poll_vote(request, poll_id):
         for i, game_id in enumerate(reversed(data["game_order"])):
             game_vote = GameVote()
             game_vote.vote = vote
-            game_vote.game = Game.objects.get(steam_id=game_id)
+            game_vote.game = Game.objects.get(id=game_id)
             game_vote.rating = (i + 1) if data["game_states"][str(game_id)] else -1
             game_vote.save()
 
@@ -154,11 +154,14 @@ def poll_stats(request, poll_id):
     result["🐝"] = 0
     result["🧀"] = 0
 
+    result_negative = copy.copy(result)
+
     votes = Vote.objects.filter(poll=poll)
     for vote in votes:
         result["🦉"] += vote.owl * vote.weight
         result["🐝"] += vote.bee * vote.weight
         result["🧀"] += vote.cheese * vote.weight
+
         game_votes = GameVote.objects.filter(vote=vote)
         for game_vote in game_votes:
             if game_vote.rating > 0:
@@ -173,6 +176,7 @@ def poll_stats(request, poll_id):
             "poll_title": poll.title,
             "result": result.items(),
             "result_negative": result_negative.items(),
+            "result_keys": result.keys()
         },
     )
 

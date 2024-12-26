@@ -108,7 +108,7 @@ def game_list(request):
     page_obj = paginator.get_page(page_no)
 
     return render(
-        request, "polls/game_list.html", context={"games": page_obj, "can_edit": True}
+        request, "polls/game_list.html", context={"games": page_obj, "can_edit": False}
     )
 
 

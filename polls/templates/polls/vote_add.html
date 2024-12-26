@@ -36,7 +36,7 @@
         <div id="sortable-list">
           {% for game in poll.games.all %}
             <div class="card mb3"
-                 data-stream-id="{{ game.steam_id }}">
+                 data-stream-id="{{ game.id }}">
               <div class="row g0">
                 <div class="handle col-md-1 d-flex align-items-center"
                      style="width: unset !important; cursor: move;">
@@ -47,7 +47,7 @@
                     <h5 class="card-title"><input
                         type="checkbox"
                         class="form-switch"
-                        name="game_{{ game.steam_id }}"
+                        name="game_{{ game.id }}"
                         checked aria-label="Included"/> &nbsp; <a
                         href="{{ game.alt_url }}"
                         target="_blank">{{ game.name }}</a>
