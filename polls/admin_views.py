@@ -247,7 +247,10 @@ def poll_detailed_stats(request, poll_id):
             tmpd[gamevote.game.name] = gamevote.rating if gamevote.rating > 0 else "👎"
 
         for game in keys:
-            tmp.append(tmpd[game])
+            try:
+                tmp.append(tmpd[game])
+            except KeyError:
+                pass
 
         res.append(tmp)
 
