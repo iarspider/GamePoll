@@ -257,5 +257,5 @@ def poll_detailed_stats(request, poll_id):
     print({"keys": keys, "results": res})
 
     return render(
-        request, "polls/vote_details.html", {"keys": res[0].keys(), "results": res}
+        request, "polls/vote_details.html", {"keys": keys, "results": res}
     )
