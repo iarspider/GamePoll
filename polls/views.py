@@ -1,3 +1,4 @@
+import copy
 import datetime
 import json
 import re
@@ -154,7 +155,11 @@ def poll_stats(request, poll_id):
     result["🐝"] = 0
     result["🧀"] = 0
 
-    result_negative = copy.copy(result)
+    result_keys = tuple(result.keys())
+
+    result_negative["🦉"] = 0
+    result_negative["🐝"] = 0
+    result_negative["🧀"] = 0
 
     votes = Vote.objects.filter(poll=poll)
     for vote in votes:
@@ -174,9 +179,9 @@ def poll_stats(request, poll_id):
         "polls/vote_stats.html",
         context={
             "poll_title": poll.title,
-            "result": result.items(),
-            "result_negative": result_negative.items(),
-            "result_keys": result.keys()
+            "result": [result[k] for k in result_keys],
+            "result_negative": [result_negative[k] for k in result_keys],
+            "result_keys": list(result.keys())
         },
     )
 

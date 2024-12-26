@@ -29,19 +29,19 @@
             const ctx = document.getElementById('combinedChart').getContext('2d');
 
             const data = {
-                labels: [{% for pair in result %}"{{ pair.0 }}", {% endfor %}],
+                labels: [{% for key in result_keys %}"{{ key }}", {% endfor %}],
                 datasets: [
                     {
                         label: 'Votes (Bar Chart)',
                         backgroundColor: 'rgba(13, 110, 253, 0.5)',
                         borderColor: 'rgba(13, 110, 253, 1)',
-                        data: [{% for pair in result %}{{ pair.1 }}, {% endfor %}],
+                        data: [{% for key in result_keys %}{{ key }}, {% endfor %}],
                         type: 'bar', // Set chart type to bar
                     },
                     {
                         label: 'Votes (Line Chart)',
                         borderColor: 'rgba(220, 53, 69, 1)',
-                        data: [{% for pair in result_negative %}{{ pair.1 }}, {% endfor %}],
+                        data: [{% for key in result_negative %}{{ key }}, {% endfor %}],
                         fill: false,
                         type: 'line', // Set chart type to line
                     },
