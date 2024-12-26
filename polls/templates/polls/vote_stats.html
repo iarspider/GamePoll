@@ -35,7 +35,7 @@
                         label: 'Votes (Bar Chart)',
                         backgroundColor: 'rgba(13, 110, 253, 0.5)',
                         borderColor: 'rgba(13, 110, 253, 1)',
-                        data: [{% for key in result_keys %}{{ key }}, {% endfor %}],
+                        data: [{% for key in result %}{{ key }}, {% endfor %}],
                         type: 'bar', // Set chart type to bar
                     },
                     {
