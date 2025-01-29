@@ -238,17 +238,24 @@ def poll_detailed_stats(request, poll_id):
         keys.append(game.name)
 
     for vote in poll.vote_set.all():
-        tmp = {"login": vote.person.first_name}
+        tmp = [vote.person.first_name]
         for k in ("owl", "bee", "cheese"):
-            tmp[k] = "✅" if getattr(vote, k) else "❌"
-        tmp["weight"] = vote.weight
+            tmp.append("✅" if getattr(vote, k) else "❌")
+        tmp.append(vote.weight)
+        tmpd = {}
         for gamevote in vote.gamevote_set.all():
-            tmp[gamevote.game.name] = gamevote.rating if gamevote.rating > 0 else "👎"
+            tmpd[gamevote.game.name] = gamevote.rating if gamevote.rating > 0 else "👎"
+
+        for game in keys:
+            try:
+                tmp.append(tmpd[game])
+            except KeyError:
+                pass
 
         res.append(tmp)
 
-    print({"keys": res[0].keys(), "results": res})
+    print({"keys": keys, "results": res})
 
     return render(
-        request, "polls/vote_details.html", {"keys": res[0].keys(), "results": res}
+        request, "polls/vote_details.html", {"keys": keys, "results": res}
     )
