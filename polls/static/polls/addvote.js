@@ -73,6 +73,19 @@ function exclude_click() {
     cardDiv.toggleClass('excluded', !$(this).prop('checked'));
 }
 
+function premium_click()  {
+    // Reset all icons to empty stars
+    $('label .bi').removeClass('bi-star-fill').addClass('bi-star');
+
+    // Apply checked style with animation
+    if ($(this).is(':checked')) {
+        $(this).next('label').find('i')
+            .removeClass('bi-star')
+            .addClass('bi-star-fill')
+            .hide().fadeIn(300); // Smooth fade-in effect
+    }
+}
+
 function init_addvote() {
     // Make the game list reorderable
     $("#sortable-list").sortable({handle: ".handle"})
@@ -88,4 +101,7 @@ function init_addvote() {
 
     // Exclusion checkboxes functionallity
     $('input[name^="game_"]').click(exclude_click);
+
+    // Update icons on change with smooth transition
+    $('input[type="radio"]').on('change', premium_click);
 }

@@ -23,7 +23,9 @@ def index(request):
 @login_required
 def poll_list(request):
     if request.user.is_superuser:
-        paginator = Paginator(Poll.objects.all(), 10, allow_empty_first_page=True)
+        paginator = Paginator(
+            Poll.objects.order_by("start_date").all(), 10, allow_empty_first_page=True
+        )
     else:
         gmtnow = (
             datetime.datetime.now(datetime.timezone.utc)
@@ -34,6 +36,7 @@ def poll_list(request):
         paginator = Paginator(
             Poll.objects.filter(start_date__lt=gmtnow, closed=False)
             .exclude(pollblock__person=request.user)
+            .order_by("start_date")
             .distinct(),
             10,
             allow_empty_first_page=True,

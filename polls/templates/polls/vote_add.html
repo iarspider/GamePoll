@@ -9,34 +9,52 @@
 
 {% block styles %}
   <style>
-      .card.excluded {
-        filter: grayscale(100%);
+    .card.excluded {
+      filter: grayscale(100%);
+    }
+
+        /* Hide the original radio buttons */
+    .star,
+    .blackstar {
+      display: none;
+    }
+
+        /* Default Unchecked state */
+    label .bi {
+      font-size: 24px;
+      color: black;
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+        /* Checked State */
+    .star:checked+label .bi {
+      color: #ffd700;
+            /* Gold color */
+      transform: scale(1.2);
+    }
+
+        /* Checked State for black star */
+    .blackstar:checked+label .bi {
+      color: black !important;
+      transform: scale(1.2);
+    }
+
+        /* Smooth transition for class changes */
+    .bi-star-fill {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
       }
 
-        /* Hide the actual radio buttons */
-        .star-radio {
-            display: none;
-        }
-
-        /* Default star (unchecked) */
-        .star::before {
-            content: "☆"; /* Default empty star */
-            font-size: 2rem;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-
-        /* Normal stars: Change to golden star when checked */
-        .star-radio:checked + .star::before {
-            content: "⭐"; /* Filled star */
-            color: gold;
-        }
-
-        /* Special star: Change to black star when checked */
-        .special:checked + .star::before {
-            content: "★"; /* Filled black star */
-            color: black;
-        }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
 
   </style>
 {% endblock %}
@@ -67,14 +85,14 @@
                 <div class="handle col-md-1 d-flex align-items-center"
                      style="width: unset !important; cursor: move;">
                   <i
-                      class="bi bi-list"></i></div>
+                    class="bi bi-list"></i></div>
                 <div class="col-md-8 d-flex align-items-center">
                   <div class="card-body">
-                        <h5 class="card-title"><input
-                            type="checkbox"
-                        class="form-switch"
-                        name="game_{{ game.id }}"
-                        checked aria-label="Included"/> {% if is_sub %} <input type="radio" class="star-radio" name="premium" id="premium{{ game.id }}"> <label for="premium{{ game.id }}" class="star"></label> {% endif %} &nbsp; <a
+                    <h5 class="card-title"><input
+                      type="checkbox"
+                      class="form-switch"
+                      name="game_{{ game.id }}"
+                      checked aria-label="Included"/> {% if is_sub %} <input type="radio" class="star" name="premium" id="premium{{ game.id }}"> <label for="premium{{ game.id }}"><i class="bi bi-star"></i></label> {% endif %} &nbsp; <a
                         href="{{ game.alt_url }}"
                         target="_blank">{{ game.name }}</a>
                     </h5>
@@ -82,7 +100,7 @@
                     <p class="card-text d-none d-md-block">Tags:
                       {% for tag in game.gametag_set.all %}
                         <span
-                            class="badge rounded-pill bg-secondary">{{ tag.tag.name }}</span>
+                          class="badge rounded-pill bg-secondary">{{ tag.tag.name }}</span>
                       {% empty %}
                         No tags
                       {% endfor %}
@@ -90,40 +108,40 @@
                   </div>
                 </div>
                 <div class="col-md-2 align-items-center d-none d-md-flex"><img
-                    src="{{ game.logo_url }}"
-                    alt="{{ game.name }}"
-                    class="img-fluid rounded-start">
+                  src="{{ game.logo_url }}"
+                  alt="{{ game.name }}"
+                  class="img-fluid rounded-start">
                 </div>
               </div>
             </div>
           {% endfor %}
         </div>
-      {% if is_sub %}
-      <div class="mt-2 ms-5">
-          <input type="radio" class="star-radio special" name="premium" id="premiumNone" checked> <label for="premiumNone" class="star"></label> Не использовать бонус
-      </div>
-      {% endif %}
+        {% if is_sub %}
+          <div class="mt-2 ms-5">
+            <input type="radio" class="blackstar" name="premium" id="premiumNone" checked> <label for="premiumNone"><i class="bi bi-star-fill"></i></label> Не использовать бонус
+          </div>
+        {% endif %}
         <div class="mt-2 ms-5">
           <!-- Emoji Checkboxes -->
           <div class="form-check form-switch form-check-inline me-5">
             <label class="form-check-label" style="font-size: 200%;"><input
-                type="checkbox"
-                name="owl_checkbox"
-                class="form-check-input"/>
+              type="checkbox"
+              name="owl_checkbox"
+              class="form-check-input"/>
               🦉</label>
           </div>
           <div class="form-check form-switch form-check-inline mx-5">
             <label class="form-check-label" style="font-size: 200%;"><input
-                type="checkbox"
-                name="cheese_checkbox"
-                class="form-check-input"/>
+              type="checkbox"
+              name="cheese_checkbox"
+              class="form-check-input"/>
               🧀</label>
           </div>
           <div class="form-check form-switch form-check-inline ms-5">
             <label class="form-check-label" style="font-size: 200%;"><input
-                type="checkbox"
-                name="bee_checkbox"
-                class="form-check-input"/>
+              type="checkbox"
+              name="bee_checkbox"
+              class="form-check-input"/>
               🐝</label>
           </div>
         </div>
@@ -147,6 +165,6 @@
   </form>
 
   <script>
-      document.addEventListener("DOMContentLoaded", init_addvote);
+    document.addEventListener("DOMContentLoaded", init_addvote);
   </script>
 {% endblock %}
