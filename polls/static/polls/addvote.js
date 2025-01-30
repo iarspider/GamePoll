@@ -32,12 +32,13 @@ function cast_click(event) {
     const voteData = {
         game_order: $("#sortable-list .card").map(function () {
             return $(this).data("stream-id");
-        }).get(), game_states: {}
+        }).get(), game_states: {}, game_boost: {}
     };
 
     $(".card").each(function () {
         const streamId = $(this).data("stream-id");
         voteData.game_states[streamId] = $(this).find("input[type='checkbox']").prop("checked");
+        voteData.game_boost[streamId] = $(this).find("input[type='radio']").prop("checked");
     });
 
     voteData.owl_checkbox = $("input[name='owl_checkbox']").prop("checked");
@@ -63,6 +64,7 @@ function cast_click(event) {
         })
         .catch(error => {
             console.error("Error casting vote:", error);
+            window.location.href = "/vote/error"
         });
 }
 

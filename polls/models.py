@@ -36,7 +36,6 @@ class Vote(models.Model):
     owl = models.BooleanField(default=False)
     bee = models.BooleanField(default=False)
     cheese = models.BooleanField(default=False)
-    weight = models.IntegerField(default=1)
 
     def __str__(self):
         return f"Vote of {self.person.username} in poll {self.poll.title}"
@@ -46,6 +45,7 @@ class GameVote(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     rating = models.IntegerField()
     vote = models.ForeignKey(Vote, on_delete=models.CASCADE)
+    weight = models.IntegerField(default=1)
 
 
 class PollBlock(models.Model):

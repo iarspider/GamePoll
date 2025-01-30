@@ -10,8 +10,34 @@
 {% block styles %}
   <style>
       .card.excluded {
-          filter: grayscale(100%);
+        filter: grayscale(100%);
       }
+
+        /* Hide the actual radio buttons */
+        .star-radio {
+            display: none;
+        }
+
+        /* Default star (unchecked) */
+        .star::before {
+            content: "☆"; /* Default empty star */
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        /* Normal stars: Change to golden star when checked */
+        .star-radio:checked + .star::before {
+            content: "⭐"; /* Filled star */
+            color: gold;
+        }
+
+        /* Special star: Change to black star when checked */
+        .special:checked + .star::before {
+            content: "★"; /* Filled black star */
+            color: black;
+        }
+
   </style>
 {% endblock %}
 
@@ -29,7 +55,7 @@
         <hr/>
         <p>Упорядочите игры перетаскиванием за <i class="bi bi-list"></i>: чем выше в
           списке игра, тем интереснее вам её увидеть. Уберите галочку у тех игр, которые
-          вам совершенно не интересны</p>
+          вам совершенно не интересны. {% if is_sub %} Вы можете увеличить вес вашего голоса (как положительного, так и отрицательного) за одну из игр, активировав переключатель ⭐ рядом с этой игрой. {% endif %}</p>
         <p>Используйте переключатели 🦉, 🧀 и/или 🐝, если вам в принципе всё равно что
           смотреть.</p>
         <hr/>
@@ -44,11 +70,11 @@
                       class="bi bi-list"></i></div>
                 <div class="col-md-8 d-flex align-items-center">
                   <div class="card-body">
-                    <h5 class="card-title"><input
-                        type="checkbox"
+                        <h5 class="card-title"><input
+                            type="checkbox"
                         class="form-switch"
                         name="game_{{ game.id }}"
-                        checked aria-label="Included"/> &nbsp; <a
+                        checked aria-label="Included"/> {% if is_sub %} <input type="radio" class="star-radio" name="premium" id="premium{{ game.id }}"> <label for="premium{{ game.id }}" class="star"></label> {% endif %} &nbsp; <a
                         href="{{ game.alt_url }}"
                         target="_blank">{{ game.name }}</a>
                     </h5>
@@ -72,6 +98,11 @@
             </div>
           {% endfor %}
         </div>
+      {% if is_sub %}
+      <div class="mt-2 ms-5">
+          <input type="radio" class="star-radio special" name="premium" id="premiumNone" checked> <label for="premiumNone" class="star"></label> Не использовать бонус
+      </div>
+      {% endif %}
         <div class="mt-2 ms-5">
           <!-- Emoji Checkboxes -->
           <div class="form-check form-switch form-check-inline me-5">
