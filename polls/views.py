@@ -127,9 +127,6 @@ def poll_vote(request, poll_id):
         vote.bee = data["bee_checkbox"]
         vote.cheese = data["cheese_checkbox"]
 
-        # if twitch_user and twitch_user.subscribed:
-        #     vote.weight = 2
-
         vote.save()
 
         lock = PollBlock()
@@ -208,9 +205,9 @@ def poll_stats(request, poll_id):
         game_votes = GameVote.objects.filter(vote=vote)
         for game_vote in game_votes:
             if game_vote.rating > 0:
-                result[game_vote.game.name] += game_vote.rating + game_vote.weight
+                result[game_vote.game.name] += game_vote.rating
             else:
-                result_negative[game_vote.game.name] += game_vote.weight
+                result_negative[game_vote.game.name] += abs(game_vote.rating)
 
     return render(
         request,

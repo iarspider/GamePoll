@@ -231,7 +231,7 @@ def poll_detailed_stats(request, poll_id):
         raise PermissionDenied()
 
     poll = get_object_or_404(Poll, pk=poll_id)
-    keys = ["login", "owl", "bee", "cheese", "weight"]
+    keys = ["login", "owl", "bee", "cheese"]
     res = []
 
     for game in poll.games.all():
@@ -241,10 +241,12 @@ def poll_detailed_stats(request, poll_id):
         tmp = [vote.person.first_name]
         for k in ("owl", "bee", "cheese"):
             tmp.append("✅" if getattr(vote, k) else "❌")
-        tmp.append(vote.weight)
         tmpd = {}
         for gamevote in vote.gamevote_set.all():
-            tmpd[gamevote.game.name] = gamevote.rating if gamevote.rating > 0 else "👎"
+            if gamevote.rating > 0:
+                tmpd[gamevote.game.name] = gamevote.rating
+            else:
+                tmpd[gamevote.game.name] = "👎" * abs(gamevote.rating)
 
         for game in keys:
             try:
