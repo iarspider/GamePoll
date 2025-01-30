@@ -11,6 +11,17 @@
 {% endblock %}
 {% block scripts %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script id="chart-labels" type="application/json">
+        {{ result_keys|json_script:"chart-labels" }}
+    </script>
+    <script id="chart-data" type="application/json">
+        {{ result|json_script:"chart-data" }}
+    </script>
+
+    <script id="chart-data-negative" type="application/json">
+        {{ result_negative|json_script:"chart-data-negative" }}
+    </script>
+
     <script>
         let animation_done = false;
         let combinedChart = 0;
@@ -27,21 +38,24 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             const ctx = document.getElementById('combinedChart').getContext('2d');
+            const labels = JSON.parse(document.getElementById('chart-labels').textContent);
+            const barData = JSON.parse(document.getElementById('chart-data').textContent);
+            const lineData = JSON.parse(document.getElementById('chart-data-negative').textContent);
 
             const data = {
-                labels: [{% for key in result_keys %}"{{ key }}", {% endfor %}],
+                labels: labels,
                 datasets: [
                     {
                         label: 'Votes (Bar Chart)',
                         backgroundColor: 'rgba(13, 110, 253, 0.5)',
                         borderColor: 'rgba(13, 110, 253, 1)',
-                        data: [{% for key in result %}{{ key }}, {% endfor %}],
+                        data: barData,
                         type: 'bar', // Set chart type to bar
                     },
                     {
                         label: 'Votes (Line Chart)',
                         borderColor: 'rgba(220, 53, 69, 1)',
-                        data: [{% for key in result_negative %}{{ key }}, {% endfor %}],
+                        data: lineData,
                         fill: false,
                         type: 'line', // Set chart type to line
                     },
