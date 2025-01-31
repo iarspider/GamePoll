@@ -45,7 +45,6 @@ class GameVote(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     rating = models.IntegerField()
     vote = models.ForeignKey(Vote, on_delete=models.CASCADE)
-    weight = models.IntegerField(default=1)
 
 
 class PollBlock(models.Model):
