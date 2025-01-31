@@ -13,12 +13,7 @@
                     <span class="icon">{% block icon %}{% endblock %}</span>
                 </div>
 
-                <p class="card-text">{% block message %}{% endblock %}</p>
-
-                {% block return %}
-                    <p class="card-text"><a href="{% url 'poll_list' %}" class="btn btn-primary">Return to List
-                        Polls</a></p>
-                {% endblock %}
+                <p class="card-text">{% block message %}{% endblock %}<br/>{% block return %}{% endblock %}</p>
             </div>
         </div>
     </div>

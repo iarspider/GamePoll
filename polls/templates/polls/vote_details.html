@@ -3,21 +3,21 @@
 {% block content %}
     <table class="table">
         <thead>
-        <tr>
-            {% for key in keys %}
-                <th scope="col">{{ key }}</th>
-            {% endfor %}
-        </tr>
-        </thead>
-        <tbody>
-        {% for row in results %}
             <tr>
-                <th scope="row">{{ row.0 }}</th>
-                {% for val in row|slice:"1:" %}
-                    <td>{{ val }}</td>
+                {% for key in keys %}
+                    <th scope="col">{{ key }}</th>
                 {% endfor %}
             </tr>
-        {% endfor %}
+        </thead>
+        <tbody>
+            {% for row in results %}
+                <tr>
+                    <th scope="row">{{ row.0 }}</th>
+                    {% for val in row|slice:"1:" %}
+                        <td>{{ val }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
 {% endblock %}

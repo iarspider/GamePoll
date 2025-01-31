@@ -9,9 +9,53 @@
 
 {% block styles %}
   <style>
-      .card.excluded {
-          filter: grayscale(100%);
+    .card.excluded {
+      filter: grayscale(100%);
+    }
+
+        /* Hide the original radio buttons */
+    .star,
+    .blackstar {
+      display: none;
+    }
+
+        /* Default Unchecked state */
+    label .bi {
+      font-size: 24px;
+      color: black;
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+        /* Checked State */
+    .star:checked+label .bi {
+      color: #ffd700;
+            /* Gold color */
+      transform: scale(1.2);
+    }
+
+        /* Checked State for black star */
+    .blackstar:checked+label .bi {
+      color: black !important;
+      transform: scale(1.2);
+    }
+
+        /* Smooth transition for class changes */
+    .bi-star-fill {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
       }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
   </style>
 {% endblock %}
 
@@ -29,26 +73,27 @@
         <hr/>
         <p>Упорядочите игры перетаскиванием за <i class="bi bi-list"></i>: чем выше в
           списке игра, тем интереснее вам её увидеть. Уберите галочку у тех игр, которые
-          вам совершенно не интересны</p>
+            вам совершенно не интересны. </p>
+          {% if is_sub %}<p>Вы можете увеличить вес вашего голоса за или против одной из игр активировав переключатель ⭐ рядом с этой игрой. </p>{% endif %}
         <p>Используйте переключатели 🦉, 🧀 и/или 🐝, если вам в принципе всё равно что
           смотреть.</p>
         <hr/>
         <div id="sortable-list">
           {% for game in poll.games.all %}
             <div class="card mb3"
-                 data-stream-id="{{ game.id }}">
+                 data-game-id="{{ game.id }}">
               <div class="row g0">
                 <div class="handle col-md-1 d-flex align-items-center"
                      style="width: unset !important; cursor: move;">
                   <i
-                      class="bi bi-list"></i></div>
+                    class="bi bi-list"></i></div>
                 <div class="col-md-8 d-flex align-items-center">
                   <div class="card-body">
                     <h5 class="card-title"><input
-                        type="checkbox"
-                        class="form-switch"
-                        name="game_{{ game.id }}"
-                        checked aria-label="Included"/> &nbsp; <a
+                      type="checkbox"
+                      class="form-switch"
+                      name="game_{{ game.id }}"
+                      checked aria-label="Included"/> {% if is_sub %} <input type="radio" class="star" name="premium" id="premium{{ game.id }}"> <label for="premium{{ game.id }}"><i class="bi bi-star"></i></label> {% endif %} &nbsp; <a
                         href="{{ game.alt_url }}"
                         target="_blank">{{ game.name }}</a>
                     </h5>
@@ -56,7 +101,7 @@
                     <p class="card-text d-none d-md-block">Tags:
                       {% for tag in game.gametag_set.all %}
                         <span
-                            class="badge rounded-pill bg-secondary">{{ tag.tag.name }}</span>
+                          class="badge rounded-pill bg-secondary">{{ tag.tag.name }}</span>
                       {% empty %}
                         No tags
                       {% endfor %}
@@ -64,35 +109,40 @@
                   </div>
                 </div>
                 <div class="col-md-2 align-items-center d-none d-md-flex"><img
-                    src="{{ game.logo_url }}"
-                    alt="{{ game.name }}"
-                    class="img-fluid rounded-start">
+                  src="{{ game.logo_url }}"
+                  alt="{{ game.name }}"
+                  class="img-fluid rounded-start" style="max-width: 184px;">
                 </div>
               </div>
             </div>
           {% endfor %}
         </div>
+        {% if is_sub %}
+          <div class="mt-2 ms-5">
+            <input type="radio" class="blackstar" name="premium" id="premiumNone" checked> <label for="premiumNone"><i class="bi bi-star-fill"></i></label> Не использовать бонус
+          </div>
+        {% endif %}
         <div class="mt-2 ms-5">
           <!-- Emoji Checkboxes -->
           <div class="form-check form-switch form-check-inline me-5">
             <label class="form-check-label" style="font-size: 200%;"><input
-                type="checkbox"
-                name="owl_checkbox"
-                class="form-check-input"/>
+              type="checkbox"
+              name="owl_checkbox"
+              class="form-check-input"/>
               🦉</label>
           </div>
           <div class="form-check form-switch form-check-inline mx-5">
             <label class="form-check-label" style="font-size: 200%;"><input
-                type="checkbox"
-                name="cheese_checkbox"
-                class="form-check-input"/>
+              type="checkbox"
+              name="cheese_checkbox"
+              class="form-check-input"/>
               🧀</label>
           </div>
           <div class="form-check form-switch form-check-inline ms-5">
             <label class="form-check-label" style="font-size: 200%;"><input
-                type="checkbox"
-                name="bee_checkbox"
-                class="form-check-input"/>
+              type="checkbox"
+              name="bee_checkbox"
+              class="form-check-input"/>
               🐝</label>
           </div>
         </div>
@@ -100,14 +150,13 @@
         <div>
           <!-- Shuffle and Cast Buttons -->
           <button type="button" class="btn btn-warning" id="shuffleButton">
-            Shuffle
+            Перемешать
           </button>
           <button type="submit" class="btn btn-primary" id="castVoteButton">
-            Cast
-            Vote
+            Проголосовать
           </button>
           <button type="button" class="btn btn-secondary"
-                  onclick="location.href='{% url 'poll_list' %}'">Cancel
+                  onclick="location.href='{% url 'poll_list' %}'">Отмена
           </button>
         </div>
       </div>
@@ -116,6 +165,6 @@
   </form>
 
   <script>
-      document.addEventListener("DOMContentLoaded", init_addvote);
+    document.addEventListener("DOMContentLoaded", init_addvote);
   </script>
 {% endblock %}

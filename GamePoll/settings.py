@@ -27,9 +27,9 @@ config = dotenv_values(".env")
 SECRET_KEY = config["DJANGO_SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-HTTP_MODE_SUPPORT = False
+HTTP_MODE_SUPPORT = True
 
 SESSION_COOKIE_SECURE = HTTP_MODE_SUPPORT
 CSRF_COOKIE_SECURE = HTTP_MODE_SUPPORT

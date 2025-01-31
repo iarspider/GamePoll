@@ -9,41 +9,41 @@
 
         <table class="table">
             <thead>
-            <tr>
-                <th scope="col">Title</th>
-                <th scope="col">Games</th>
-                <th scope="col">Start Date</th>
-                <th scope="col">Results</th>
-                {% if request.user.is_superuser %}
-                    <th scope="col">Details</th>
-                    <th scope="col">State</th>
-                {% endif %}
-            </tr>
-            </thead>
-            <tbody id="poll-table-body">
-            {% for poll in polls %}
                 <tr>
-                    <td><a href="{% url "vote_add" poll.id %}">{{ poll.title }}</a></td>
-                    <td>
-                        {% for game in poll.games.all %}
-                            <a href="{{ game.alt_url }}" target="_blank">{{ game.name }}</a>{% if not forloop.last %},
-                        {% endif %}
-                        {% endfor %}
-                    </td>
-                    <td class="start-date"
-                        data-utc="{{ poll.start_date|date:"U" }}">{{ poll.start_date|date:"DATETIME_FORMAT" }}</td>
-                    <td><a href="{% url "poll_stats" poll.id %}">📊</a></td>
+                    <th scope="col">Title</th>
+                    <th scope="col">Games</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">Results</th>
                     {% if request.user.is_superuser %}
-                        <td><a href="{% url "poll_details" poll.id %}">Details</a></td>
-                        <td><a href="{% url "poll_toggle_lock" poll.id %}">{% if poll.closed %} Locked {% else %}
-                            Active {% endif %}</a></td>
+                        <th scope="col">Details</th>
+                        <th scope="col">State</th>
                     {% endif %}
                 </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="4">No available polls, check back later</td>
-                </tr>
-            {% endfor %}
+            </thead>
+            <tbody id="poll-table-body">
+                {% for poll in polls %}
+                    <tr>
+                        <td><a href="{% url "vote_add" poll.id %}">{{ poll.title }}</a></td>
+                        <td>
+                            {% for game in poll.games.all %}
+                                <a href="{{ game.alt_url }}" target="_blank">{{ game.name }}</a>{% if not forloop.last %},
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td class="start-date"
+                            data-utc="{{ poll.start_date|date:"U" }}">{{ poll.start_date|date:"DATETIME_FORMAT" }}</td>
+                        <td><a href="{% url "poll_stats" poll.id %}">📊</a></td>
+                        {% if request.user.is_superuser %}
+                            <td><a href="{% url "poll_details" poll.id %}">Details</a></td>
+                            <td><a href="{% url "poll_toggle_lock" poll.id %}">{% if poll.closed %} Locked {% else %}
+                                Active {% endif %}</a></td>
+                        {% endif %}
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4">No available polls, check back later</td>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
 
