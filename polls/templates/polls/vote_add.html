@@ -80,7 +80,7 @@
         <div id="sortable-list">
           {% for game in poll.games.all %}
             <div class="card mb3"
-                 data-stream-id="{{ game.id }}">
+                 data-game-id="{{ game.id }}">
               <div class="row g0">
                 <div class="handle col-md-1 d-flex align-items-center"
                      style="width: unset !important; cursor: move;">
@@ -149,14 +149,13 @@
         <div>
           <!-- Shuffle and Cast Buttons -->
           <button type="button" class="btn btn-warning" id="shuffleButton">
-            Shuffle
+            Перемешать
           </button>
           <button type="submit" class="btn btn-primary" id="castVoteButton">
-            Cast
-            Vote
+            Проголосовать
           </button>
           <button type="button" class="btn btn-secondary"
-                  onclick="location.href='{% url 'poll_list' %}'">Cancel
+                  onclick="location.href='{% url 'poll_list' %}'">Отмена
           </button>
         </div>
       </div>

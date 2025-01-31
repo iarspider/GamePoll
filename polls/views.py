@@ -5,10 +5,12 @@ import re
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
+import polls.models
 from GamePoll import settings
 from polls.models import TwitchUser, Poll, Vote, GameVote, Game, PollBlock
 
@@ -116,7 +118,28 @@ def poll_vote(request, poll_id):
 
     if request.method == "POST":
         data = json.loads(request.body)
-        poll = Poll.objects.get(id=poll_id)
+        try:
+            poll = Poll.objects.get(id=poll_id)
+        except Poll.DoesNotExist:
+            return HttpResponse(f"Poll with id {poll_id} not found", status=400)
+
+        if poll.closed:
+            return HttpResponse(f"Poll with id {poll_id} is closed", status=400)
+
+        boost_id = int(data.get("game_boost", -1))
+
+        # Validation
+        s1 = set(data["game_order"])
+        s2 = set(int(x) for x in data["game_states"].keys())
+        s3 = set(x.id for x in poll.games.all())
+
+        if not (s1 == s2 and s2 == s3):
+            return HttpResponse(f"Mismatch between game_order, game_states and poll_games", status=400)
+
+        if boost_id != -1 and ((twitch_user and twitch_user.subscribed) or settings.DEBUG):
+            if boost_id not in s1:
+                return HttpResponse(f"Invalid boosted game", status=400)
+
         vote = Vote()
         vote.poll = poll
         if poll.anonymous:
@@ -140,11 +163,12 @@ def poll_vote(request, poll_id):
             game_vote.game = Game.objects.get(id=game_id)
             game_vote.rating = (i + 1) if data["game_states"][str(game_id)] else -1
             if (twitch_user and twitch_user.subscribed) or settings.DEBUG:
-                if data["game_states"][str(game_id)]:
+                if game_id == boost_id:
                     if game_vote.rating == -1:
                         game_vote.rating = -2
                     else:
                         game_vote.rating += 1
+
             game_vote.save()
 
         return redirect("vote_ok")
