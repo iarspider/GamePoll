@@ -105,11 +105,11 @@ def poll_vote(request, poll_id):
     except Poll.DoesNotExist:
         return render(request, "polls/poll_not_found.html")
 
-    if PollBlock.objects.filter(person=request.user, poll=poll).count() > 0:
-        return render(request, "polls/second_vote_attempt.html")
-
     if poll.closed:
         return render(request, "polls/poll_locked.html")
+
+    if PollBlock.objects.filter(person=request.user, poll=poll).count() > 0:
+        return render(request, "polls/second_vote_attempt.html", context={"id": poll_id})
 
     try:
         twitch_user = TwitchUser.objects.get(user=request.user)

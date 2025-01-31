@@ -2,8 +2,7 @@
 
 {% extends "polls/generic_message.html" %}
 
-{% block title %}Second Vote Attempt{% endblock %}
+{% block title %}Повторное голосование{% endblock %}
 {% block icon %}🚫{% endblock %}  {# Prohibited icon for second vote attempt #}
 {% block icon_color %}#FF6347{% endblock %}  {# Tomato color for prohibited icon #}
-{% block message %}You have already voted in this poll. Each user is allowed to vote only once. Thank you for your
-    participation!{% endblock %}
+{% block message %}Вы уже участвовали в этом голосовании, но можете переголосовать, нажав <a href="{% url "poll_unvote" id %}">сюда</a>. {% endblock %}

@@ -11,16 +11,9 @@
 {% endblock %}
 {% block scripts %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script id="chart-labels" type="application/json">
-        {{ result_keys|json_script:"chart-labels" }}
-    </script>
-    <script id="chart-data" type="application/json">
-        {{ result|json_script:"chart-data" }}
-    </script>
-
-    <script id="chart-data-negative" type="application/json">
-        {{ result_negative|json_script:"chart-data-negative" }}
-    </script>
+    {{ result_keys|json_script:"chart-labels" }}
+    {{ result|json_script:"chart-data" }}
+    {{ result_negative|json_script:"chart-data-negative" }}
 
     <script>
         let animation_done = false;
