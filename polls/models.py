@@ -3,14 +3,19 @@ from django.db import models
 from django.db.models import OneToOneField
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=255)
+
+
 class Game(models.Model):
     name = models.CharField(max_length=255)
-    steam_id = models.IntegerField()
+    steam_id = models.BigIntegerField()
     description = models.TextField()
     alt_url = models.URLField(max_length=255)
     logo_url = models.URLField(max_length=255, blank=True, null=True)
     small_logo_url = models.URLField(max_length=255, blank=True, null=True)
     completed = models.BooleanField(default=False)
+    tags = models.ManyToManyField(Tag)
 
     def __str__(self):
         res = f"{self.name}"
@@ -20,10 +25,16 @@ class Game(models.Model):
 
 
 class Poll(models.Model):
-    title = models.CharField(max_length=255, unique=True, default="FILLME")
+    STATUS_CHOICES = [
+        ("active", "Активно"),
+        ("closed", "Голосование окончено"),
+        ("finished", "Итоги подведены"),
+    ]
+
+    title = models.CharField(max_length=255, unique=False, default="FILLME")
     games = models.ManyToManyField(Game, related_name="games")
     start_date = models.DateTimeField()
-    closed = models.BooleanField(default=False)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="active")
     anonymous = models.BooleanField(default=False)
 
     def __str__(self):
@@ -36,6 +47,7 @@ class Vote(models.Model):
     owl = models.BooleanField(default=False)
     bee = models.BooleanField(default=False)
     cheese = models.BooleanField(default=False)
+    sub_vote = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Vote of {self.person.username} in poll {self.poll.title}"
@@ -46,10 +58,16 @@ class GameVote(models.Model):
     rating = models.IntegerField()
     vote = models.ForeignKey(Vote, on_delete=models.CASCADE)
 
+    class Meta:
+        unique_together = ("game", "vote")
+
 
 class PollBlock(models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
     person = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("poll", "person")
 
 
 class TwitchUser(models.Model):
@@ -59,12 +77,3 @@ class TwitchUser(models.Model):
 
     def __str__(self):
         return f"{self.user.username}@{self.twitch_user_id}"
-
-
-class Tag(models.Model):
-    name = models.CharField(max_length=255)
-
-
-class GameTag(models.Model):
-    game = models.ForeignKey(Game, on_delete=models.DO_NOTHING)
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)

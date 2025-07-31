@@ -1,108 +1,137 @@
-<!-- polls/templates/chart_combined.html -->
 {% extends "polls/layout.html" %}
+
 {% block styles %}
-    <style>
-        canvas {
-            max-width: 800px;
-            max-height: 600px;
-            margin: 20px;
-        }
-    </style>
+<style>
+  .podium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  .podium-item {
+    width: 220px;
+    text-align: center;
+    position: relative;
+  }
+  .podium-item img {
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+  }
+  .podium-item img:hover {
+    transform: scale(1.05);
+  }
+  .podium-1 img { width: 220px; }
+  .podium-2 img, .podium-3 img { width: 180px; }
+
+  .medal {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 3rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  }
+
+  .rest-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .rest-item {
+    text-align: center;
+    position: relative;
+  }
+  .rest-item img {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+  }
+  .rest-item img:hover {
+    transform: scale(1.03);
+  }
+  .rest-item a {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: #007bff;
+    text-decoration: none;
+  }
+  .rest-item a:hover {
+    text-decoration: underline;
+  }
+  div.stats {
+      font-size: 125%;
+  }
+</style>
 {% endblock %}
-{% block scripts %}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    {{ result_keys|json_script:"chart-labels" }}
-    {{ result|json_script:"chart-data" }}
-    {{ result_negative|json_script:"chart-data-negative" }}
 
-    <script>
-        let animation_done = false;
-        let combinedChart = 0;
-
-        function waitForAnimation() {
-            // Check if animation_done is true
-            if (animation_done) {
-                $("#export").prop("disabled", false).attr("href", combinedChart.toBase64Image()).attr("download", "chart.png");
-            } else {
-                // If not true, wait for a short interval and check again
-                setTimeout(waitForAnimation, 100);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const ctx = document.getElementById('combinedChart').getContext('2d');
-            const labels = JSON.parse(document.getElementById('chart-labels').textContent);
-            const barData = JSON.parse(document.getElementById('chart-data').textContent);
-            const lineData = JSON.parse(document.getElementById('chart-data-negative').textContent);
-
-            const data = {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Votes (Bar Chart)',
-                        backgroundColor: 'rgba(13, 110, 253, 0.5)',
-                        borderColor: 'rgba(13, 110, 253, 1)',
-                        data: barData,
-                        type: 'bar', // Set chart type to bar
-                    },
-                    {
-                        label: 'Votes (Line Chart)',
-                        borderColor: 'rgba(220, 53, 69, 1)',
-                        data: lineData,
-                        fill: false,
-                        type: 'line', // Set chart type to line
-                    },
-                ],
-            };
-
-            const plugin = {
-                id: 'customCanvasBackgroundColor',
-                beforeDraw: (chart, args, options) => {
-                    const {ctx} = chart;
-                    ctx.save();
-                    ctx.globalCompositeOperation = 'destination-over';
-                    ctx.fillStyle = options.color || '#99ffff';
-                    ctx.fillRect(0, 0, chart.width, chart.height);
-                    ctx.restore();
-                }
-            };
-
-            combinedChart = new Chart(ctx, {
-                type: 'bar', // Initial chart type (it will be combined)
-                data: data,
-                plugins: [plugin],
-                options: {
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        customCanvasBackgroundColor: {
-                            color: 'white',
-                        }
-                    },
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                        },
-                        y: {
-                            beginAtZero: true,
-                        },
-                    },
-                    animation: {
-                        onComplete: function () {
-                            animation_done = true;
-                        },
-                    },
-                }
-            });
-
-            waitForAnimation();
-        });
-    </script>
-{% endblock %}
 {% block content %}
-    <h1>Poll results for {{ poll_title }}</h1>
-    <canvas id="combinedChart"></canvas>
-    <a class="btn btn-primary" id="export" disabled>Export as PNG</a>
-{% endblock %}
+<div class="container mt-4">
+  <h1>Результаты голосования &laquo;{{ poll_title }}&raquo;</h1>
 
+  {% if top_tie %}
+  <div class="alert alert-warning text-center mb-3">
+    🟡 Несколько игр заняли первое место --- окончательный победитель будет определён на стриме!
+  </div>
+  {% endif %}
+
+  <h2 class="text-center">Победители</h2>
+  {% if top3|length >= 3 %}
+  <div class="podium">
+  <div class="podium-item podium-2">
+    <span class="medal">🥈</span>
+    <a href="{{ top3.1.alt_url }}" target="_blank">
+      <img src="{{ top3.1.logo_url }}" alt="{{ top3.1.name }}">
+    </a>
+    <div><a href="{{ top3.1.alt_url }}" target="_blank">{{ top3.1.name }}</a></div>
+  </div>
+
+  <div class="podium-item podium-1">
+    <span class="medal">🥇</span>
+    <a href="{{ top3.0.alt_url }}" target="_blank">
+      <img src="{{ top3.0.logo_url }}" alt="{{ top3.0.name }}">
+    </a>
+    <div><a href="{{ top3.0.alt_url }}" target="_blank">{{ top3.0.name }}</a></div>
+  </div>
+
+  <div class="podium-item podium-3">
+    <span class="medal">🥉</span>
+    <a href="{{ top3.2.alt_url }}" target="_blank">
+      <img src="{{ top3.2.logo_url }}" alt="{{ top3.2.name }}">
+    </a>
+    <div><a href="{{ top3.2.alt_url }}" target="_blank">{{ top3.2.name }}</a></div>
+  </div>
+</div>
+  {% endif %}
+
+{% if rest %}
+<h3 class="text-center">Остальные игры</h3>
+<div class="rest-grid">
+  {% for game in rest %}
+  <div class="rest-item">
+    <a href="{{ game.alt_url }}" target="_blank">
+      <img src="{{ game.logo_url }}" alt="{{ game.name }}">
+    </a>
+    <div>
+      <a href="{{ game.alt_url }}" target="_blank">
+        #{{ forloop.counter|add:3 }}: {{ game.name }}
+      </a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+<h3 class="text-center">Статистика</h3>
+<div class="text-center stats">
+        {% for res in result %}
+            {% if res %}
+            {% if forloop.counter > 1 %}&nbsp;•&nbsp;{% endif %}{{ res }}
+            {% endif %}
+        {% endfor %}
+</div>
+</div>
+{% endblock %}

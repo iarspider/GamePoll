@@ -12,7 +12,7 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 
-from polls.models import Game, Poll, Tag, GameTag
+from polls.models import Game, Poll, Tag
 
 
 class HTMLFilter(HTMLParser, ABC):
@@ -142,6 +142,14 @@ def game_import(request):
                 continue
 
             game_data = game_data[str(game_id)]["data"]
+            game_tags: list[Tag] = []
+
+            for tag_ in game_data["genres"]:
+                game_tags.append(
+                    Tag.objects.get_or_create(
+                        id=tag_["id"], defaults={"name": tag_["description"]}
+                    )[0]
+                )
 
             game = Game(
                 name=game_data["name"],
@@ -154,18 +162,9 @@ def game_import(request):
                 small_logo_url=game_data.get(
                     "capsule_imagev5", game_data["capsule_image"]
                 ),
+                tags=game_tags,
             )
             game.save()
-
-            for tag_ in game_data["genres"]:
-                this_tag = Tag.objects.get_or_create(
-                    id=tag_["id"], defaults={"name": tag_["description"]}
-                )[0]
-
-                game_tag = GameTag()
-                game_tag.game = game
-                game_tag.tag = this_tag
-                game_tag.save()
 
             messages.success(request, f"Game {game} added successfully")
 
@@ -195,12 +194,41 @@ def poll_add(request):
 
         return HttpResponse(reverse("poll_list"))
 
-    return render(request, "polls/poll_add.html",
-                  context={"games": Game.objects.filter(completed=False).order_by("-id")})
+    return render(
+        request,
+        "polls/poll_add.html",
+        context={"games": Game.objects.filter(completed=False).order_by("-id")},
+    )
 
 
 @login_required
-def poll_toggle_lock(request, poll_id):
+def poll_toggle_lock(request, poll_id, new_status):
+    if not request.user.is_superuser:
+        raise PermissionDenied()
+
+    try:
+        poll = Poll.objects.get(id=poll_id)
+    except Poll.DoesNotExist:
+        return HttpResponseRedirect(reverse("poll_list"))
+
+    return render(
+        request,
+        "polls/poll_toggle_lock.html",
+        context={
+            "poll_title": poll.title,
+            "poll_id": poll.id,
+            "action": {
+                "active": "Открыть",
+                "closed": "Завершить",
+                "finished": "Закрыть",
+            },
+            "new_status": new_status,
+        },
+    )
+
+
+@login_required
+def poll_toggle_confirm(request, poll_id):
     if not request.user.is_superuser:
         raise PermissionDenied()
 
@@ -210,19 +238,10 @@ def poll_toggle_lock(request, poll_id):
         return HttpResponseRedirect(reverse("poll_list"))
 
     if request.method == "POST":
-        poll.closed = not poll.closed
+        poll.status = request.data["new_status"]
         poll.save()
-        return HttpResponseRedirect(reverse("poll_list"))
 
-    return render(
-        request,
-        "polls/poll_toggle_lock.html",
-        context={
-            "poll_title": poll.title,
-            "poll_id": poll.id,
-            "action": "Unlock" if poll.closed else "Lock",
-        },
-    )
+    return HttpResponseRedirect(reverse("poll_list"))
 
 
 @login_required
@@ -256,6 +275,4 @@ def poll_detailed_stats(request, poll_id):
 
         res.append(tmp)
 
-    return render(
-        request, "polls/vote_details.html", {"keys": keys, "results": res}
-    )
+    return render(request, "polls/vote_details.html", {"keys": keys, "results": res})

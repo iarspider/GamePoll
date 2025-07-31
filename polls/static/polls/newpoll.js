@@ -1,7 +1,7 @@
 // Function to update the state of the Submit button
 function updateSubmitButtonState() {
     const numSelectedGames = $("#selectedGamesList li").length;
-    $("#submitBtn").prop("disabled", numSelectedGames <= 1);
+    $("#submitBtn").prop("disabled", numSelectedGames <= 2);
 }
 
 function toDatetimeLocal(date) {

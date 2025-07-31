@@ -1,78 +1,80 @@
 <!-- poll_list.html -->
 
 {% extends 'polls/layout.html' %}
+
+{% block styles %}
+<style>
+  .poll-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+  }
+  .poll-card:hover {
+    transform: scale(1.01);
+  }
+  .poll-card-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+  }
+  .poll-card-games {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  .poll-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-    <div class="container mt-4">
-        <h2>Poll List</h2>
-        {% if request.user.is_superuser %}
-            <a class="btn btn-secondary" href="{% url "poll_add" %}">Create poll</a>{% endif %}
+<div class="container mt-4">
+  <h2>Список голосований</h2>
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Title</th>
-                    <th scope="col">Games</th>
-                    <th scope="col">Start Date</th>
-                    <th scope="col">Results</th>
-                    {% if request.user.is_superuser %}
-                        <th scope="col">Details</th>
-                        <th scope="col">State</th>
-                    {% endif %}
-                </tr>
-            </thead>
-            <tbody id="poll-table-body">
-                {% for poll in polls %}
-                    <tr>
-                        <td><a href="{% url "vote_add" poll.id %}">{{ poll.title }}</a></td>
-                        <td>
-                            {% for game in poll.games.all %}
-                                <a href="{{ game.alt_url }}" target="_blank">{{ game.name }}</a>{% if not forloop.last %},
-                                {% endif %}
-                            {% endfor %}
-                        </td>
-                        <td class="start-date"
-                            data-utc="{{ poll.start_date|date:"U" }}">{{ poll.start_date|date:"DATETIME_FORMAT" }}</td>
-                        <td><a href="{% url "poll_stats" poll.id %}">📊</a></td>
-                        {% if request.user.is_superuser %}
-                            <td><a href="{% url "poll_details" poll.id %}">Details</a></td>
-                            <td><a href="{% url "poll_toggle_lock" poll.id %}">{% if poll.closed %} Locked {% else %}
-                                Active {% endif %}</a></td>
-                        {% endif %}
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="4">No available polls, check back later</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+  {% if request.user.is_superuser %}
+    <a class="btn btn-secondary mb-3" href="{% url "poll_add" %}">Создать</a>
+  {% endif %}
 
-        <nav aria-label="Page navigation">
-            <ul class="pagination">
-                {% for page_num in polls.paginator.page_range %}
-                    <li class="page-item{% if page_num == polls.number %} active{% endif %}">
-                        <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </nav>
+  {% for poll in polls %}
+    <div class="poll-card">
+      <div class="poll-card-title">{{ poll.title }}</div>
+
+      {% if not request.user.is_superuser %}
+      <div class="poll-card-games mb-2">
+        {% for game in poll.games.all %}
+          <a href="{{ game.alt_url }}" target="_blank">{{ game.name }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="poll-actions">
+        <a href="{% url "vote_add" poll.id %}" class="btn btn-primary btn-sm">🗳 Проголосовать</a>
+        <a href="{% url "poll_stats" poll.id %}" class="btn btn-outline-secondary btn-sm">🏆 Результаты</a>
+      {% if request.user.is_superuser %}
+        <a href="{% url "poll_details" poll.id %}" class="btn btn-outline-secondary btn-sm">🧐 Таблица</a>
+        <a href="{% url "poll_toggle_lock" poll.id %}" class="btn btn-outline-secondary btn-sm">
+          {% if poll.closed %} 🔒 Locked {% else %} 🔓 Active {% endif %}
+        </a>
+      {% endif %}
+      </div>
     </div>
+  {% empty %}
+    <p>Нет доступных голосований</p>
+  {% endfor %}
 
-    <script>
-        // jQuery script for handling pagination and timezone conversion
-        document.addEventListener("DOMContentLoaded", function () {
-
-            // Function to convert UTC time to browser timezone
-            function convertTimezone() {
-                $('.start-date, .end-date').each(function () {
-                    const utcDateString = $(this).data('utc');
-                    const utcDate = new Date(Number(utcDateString)*1000);
-                    const localDate = utcDate.toLocaleString();
-                    $(this).text(localDate);
-                });
-            }
-
-            convertTimezone();
-        });
-    </script>
+  <nav aria-label="Page navigation">
+    <ul class="pagination">
+      {% for page_num in polls.paginator.page_range %}
+        <li class="page-item{% if page_num == polls.number %} active{% endif %}">
+          <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+</div>
 {% endblock %}

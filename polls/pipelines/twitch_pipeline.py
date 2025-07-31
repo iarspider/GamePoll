@@ -4,6 +4,7 @@ from polls.models import TwitchUser
 
 import requests
 
+
 def get_user(backend, access_token):
     user_info_url = "https://api.twitch.tv/helix/users"
     headers = {
@@ -53,7 +54,9 @@ def fetch_user_details(backend, details, user=None, *args, **kwargs):
             twitch_user = TwitchUser.objects.get(user=user)
 
             try:
-                res = get_subscription(backend, access_token, twitch_user.twitch_user_id)
+                res = get_subscription(
+                    backend, access_token, twitch_user.twitch_user_id
+                )
                 twitch_user.subscribed = True
             except requests.exceptions.HTTPError:
                 twitch_user.subscribed = False
