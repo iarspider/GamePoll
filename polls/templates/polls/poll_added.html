@@ -1,0 +1,33 @@
+{% extends "polls/generic_message.html" %}
+
+{% block title %}Голосование добавлено{% endblock %}
+{% block icon %}✅{% endblock %}
+{% block icon_color %}#4CAF50{% endblock %}
+
+{% block message %}
+Новое голосование &laquo;{{ poll.title }}&raquo; успешно создано и теперь доступно в списке голосований.
+<div class="input-group mt-3" style="max-width: 400px; margin: 0 auto;">
+  <input type="text" id="pollLink" class="form-control" readonly
+         value="{{ request.scheme }}://{{ request.get_host }}{% url "vote_add" poll.id %}">
+  <button class="btn btn-outline-secondary" type="button" id="copyButton">🔗</button>
+</div>
+{% endblock %}
+
+{% block buttons %}
+  <a href="{% url 'poll_list' %}" class="btn btn-primary">К списку голосований</a>
+  <a href="{% url 'poll_add' %}" class="btn btn-secondary">Создать ещё</a>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById("copyButton").addEventListener("click", function () {
+  const input = document.getElementById("pollLink");
+  input.select();
+  input.setSelectionRange(0, 99999); // для мобильных
+  navigator.clipboard.writeText(input.value).then(() => {
+    this.textContent = "✅";
+    setTimeout(() => this.textContent = "🔗", 1500);
+  });
+});
+</script>
+{% endblock %}

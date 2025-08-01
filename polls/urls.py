@@ -14,14 +14,13 @@ game_patterns = [
 poll_patterns = [
     path("list", views.poll_list, name="poll_list"),
     path("add", admin_views.poll_add, name="poll_add"),
+    path("added/<int:poll_id>", admin_views.poll_added, name="poll_added"),
     path(
         "toggle_lock/<int:poll_id>/<str:new_status>/",
         admin_views.poll_toggle_lock,
         name="poll_toggle_lock",
     ),
-    path("toggle_lock/",
-         admin_views.poll_toggle_lock,
-         name="poll_toggle_lock_confirm"),
+    path("toggle_lock/", admin_views.poll_toggle_lock, name="poll_toggle_lock_confirm"),
     path("stats/<int:poll_id>", views.poll_stats, name="poll_stats"),
     path("details/<int:poll_id>", admin_views.poll_detailed_stats, name="poll_details"),
 ]

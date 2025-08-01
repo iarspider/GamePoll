@@ -191,7 +191,7 @@ def poll_add(request):
 
         poll.save()
 
-        return HttpResponse(reverse("poll_list"))
+        return redirect("poll_added", poll_id=poll.id)
 
     return render(
         request,
@@ -272,3 +272,12 @@ def poll_detailed_stats(request, poll_id):
         res.append(tmp)
 
     return render(request, "polls/vote_details.html", {"keys": keys, "results": res})
+
+
+@login_required
+def poll_added(request, poll_id):
+    if not request.user.is_superuser:
+        raise PermissionDenied()
+
+    poll = get_object_or_404(Poll, pk=poll_id)
+    return render("polls/poll_added.html", {"poll": poll})
