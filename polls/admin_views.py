@@ -179,9 +179,10 @@ def poll_add(request):
     if request.method == "POST":
         data = json.loads(request.body)
         poll = Poll()
-        poll.anonymous = data["anonymous"]
-        poll.start_date = datetime.datetime.fromisoformat(data["start_date"])
-        poll.end_date = datetime.datetime.fromisoformat(data["end_date"])
+        poll.anonymous = False
+        # poll.anonymous = data["anonymous"]
+        # poll.start_date = datetime.datetime.fromisoformat(data["start_date"])
+        # poll.end_date = datetime.datetime.fromisoformat(data["end_date"])
         poll.title = data["title"]
         poll.save()
 

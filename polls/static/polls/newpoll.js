@@ -82,8 +82,8 @@ function init_new_poll() {
         const apiEndpoint = $(event.target).attr('action');
 
         const data = {
-            "start_date": toISOTime("start_date"),
-            "end_date": toISOTime("end_date"),
+            //"start_date": toISOTime("start_date"),
+            //"end_date": toISOTime("end_date"),
             "selectedIds": selectedGameIds,
             "anonymous": $("#anonymous").prop("checked"),
             "title": $("#title")[0].value,

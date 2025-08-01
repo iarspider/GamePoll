@@ -33,7 +33,6 @@ class Poll(models.Model):
 
     title = models.CharField(max_length=255, unique=False, default="FILLME")
     games = models.ManyToManyField(Game, related_name="games")
-    start_date = models.DateTimeField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="active")
     anonymous = models.BooleanField(default=False)
 
