@@ -1,9 +1,9 @@
-<!-- polls/templates/no_vote.html -->
-
 {% extends "polls/generic_message.html" %}
-
 {% block title %}Не голосовали{% endblock %}
-{% block icon %}🚫{% endblock %}  {# Prohibited icon for second vote attempt #}
-{% block icon_color %}#FF6347{% endblock %}  {# Tomato color for prohibited icon #}
-{% block message %}Вы не участвовали в голосовании "{{ poll.title }}"{% endblock %}
-{% block return %}<p class="card-text"><a href="{% url "vote_add" poll.id %}" class="btn btn-secondary">Проголосовать</a><a href="{% url 'poll_list' %}" class="btn btn-secondary">К списку голосований</a></p>{% endblock %}
+{% block icon %}🚫{% endblock %}
+{% block icon_color %}#FF6347{% endblock %}
+{% block message %}Вы не участвовали в голосовании &laquo;{{ poll.title }}&raquo;{% endblock %}
+{% block buttons %}
+  <a href="{% url "vote_add" poll.id %}" class="btn btn-primary">Проголосовать</a>
+  <a href="{% url 'poll_list' %}" class="btn btn-secondary">К списку голосований</a>
+{% endblock %}

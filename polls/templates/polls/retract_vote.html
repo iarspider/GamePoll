@@ -1,10 +1,12 @@
-<!-- polls/templates/retract_vote.html -->
-
 {% extends "polls/generic_message.html" %}
-
 {% block title %}Отменить голос?{% endblock %}
 {% block icon %}⚠{% endblock %}
 {% block icon_color %}#FFD700{% endblock %}
-{% block message %}Отменить Ваше участие в голосовании "{{ poll.title }}"?{% endblock %}
-{% block return %}<form method="POST" action="{% url 'poll_unvote' poll.id %}" > {% csrf_token %}<a href="#" onclick="$('form').submit()" class="btn btn-danger">Да</a><a href="{% url 'poll_list' %}" class="btn btn-secondary">Нет</a></form>{% endblock %}
-{% block scripts %}{% endblock %}
+{% block message %}Отменить Ваше участие в голосовании &laquo;{{ poll.title }}&raquo;?{% endblock %}
+{% block buttons %}
+  <form method="POST" action="{% url 'poll_unvote' poll.id %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Да</button>
+    <a href="{% url 'poll_list' %}" class="btn btn-secondary">Нет</a>
+  </form>
+{% endblock %}

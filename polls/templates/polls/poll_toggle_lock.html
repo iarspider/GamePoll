@@ -1,20 +1,14 @@
-<!-- polls/templates/work_in_progress.html -->
-
 {% extends "polls/generic_message.html" %}
-
 {% block title %}{{ action }} голосование?{% endblock %}
 {% block icon %}⚠{% endblock %}
 {% block icon_color %}#FFD700{% endblock %}
-{% block return %}{% endblock %}
-{% block message %}Вы действительно хотите {{ action|lower }} голосование &laquo;{{ poll_title }}&raquo;?
-    <div class="mt-3 d-flex justify-content-center gap-2">
-        <form method="post" action="{% url 'poll_toggle_lock_confirm' %}">
-            <input type="hidden" name="poll_id" value="{{ poll_id }}">
-            <input type="hidden" name="new_status" value="{{ new_status }}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-primary">Подтвердить</button>
-        </form>
-
-        <a href="{% url 'poll_list' %}" class="btn btn-secondary">Отмена</a>
-    </div>
+{% block message %}Вы действительно хотите {{ action|lower }} голосование &laquo;{{ poll_title }}&raquo;?{% endblock %}
+{% block buttons %}
+  <form method="post" action="{% url 'poll_toggle_lock_confirm' %}">
+    {% csrf_token %}
+    <input type="hidden" name="poll_id" value="{{ poll_id }}">
+    <input type="hidden" name="new_status" value="{{ new_status }}">
+    <button type="submit" class="btn btn-primary">Подтвердить</button>
+  </form>
+  <a href="{% url 'poll_list' %}" class="btn btn-secondary">Отмена</a>
 {% endblock %}
