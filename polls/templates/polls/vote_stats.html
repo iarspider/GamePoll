@@ -1,137 +1,152 @@
 {% extends "polls/layout.html" %}
 
 {% block styles %}
-<style>
-  .podium {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    gap: 2rem;
-    margin-bottom: 2rem;
-  }
-  .podium-item {
-    width: 220px;
-    text-align: center;
-    position: relative;
-  }
-  .podium-item img {
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    transition: transform 0.2s;
-  }
-  .podium-item img:hover {
-    transform: scale(1.05);
-  }
-  .podium-1 img { width: 220px; }
-  .podium-2 img, .podium-3 img { width: 180px; }
+    <style>
+        .podium {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
 
-  .medal {
-    position: absolute;
-    top: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 3rem;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
-  }
+        .podium-item {
+            width: 220px;
+            text-align: center;
+            position: relative;
+        }
 
-  .rest-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 1rem;
-    margin-top: 2rem;
-  }
-  .rest-item {
-    text-align: center;
-    position: relative;
-  }
-  .rest-item img {
-    width: 100%;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    transition: transform 0.2s;
-  }
-  .rest-item img:hover {
-    transform: scale(1.03);
-  }
-  .rest-item a {
-    display: block;
-    margin-top: 4px;
-    font-size: 0.9rem;
-    color: #007bff;
-    text-decoration: none;
-  }
-  .rest-item a:hover {
-    text-decoration: underline;
-  }
-  div.stats {
-      font-size: 125%;
-  }
-</style>
+        .podium-item img {
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .podium-item img:hover {
+            transform: scale(1.05);
+        }
+
+        .podium-1 img {
+            width: 220px;
+        }
+
+        .podium-2 img, .podium-3 img {
+            width: 180px;
+        }
+
+        .medal {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        .rest-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .rest-item {
+            text-align: center;
+            position: relative;
+        }
+
+        .rest-item img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .rest-item img:hover {
+            transform: scale(1.03);
+        }
+
+        .rest-item a {
+            display: block;
+            margin-top: 4px;
+            font-size: 0.9rem;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .rest-item a:hover {
+            text-decoration: underline;
+        }
+
+        div.stats {
+            font-size: 125%;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-  <h1>Результаты голосования &laquo;{{ poll_title }}&raquo;</h1>
+    <div class="container mt-4">
+        <h1>Результаты голосования &laquo;{{ poll_title }}&raquo;</h1>
 
-  {% if top_tie %}
-  <div class="alert alert-warning text-center mb-3">
-    🟡 Несколько игр заняли первое место --- окончательный победитель будет определён на стриме!
-  </div>
-  {% endif %}
+        {% if top_tie %}
+            <div class="alert alert-warning text-center mb-3">
+                🟡 Несколько игр заняли первое место --- окончательный победитель будет определён на стриме!
+            </div>
+        {% endif %}
 
-  <h2 class="text-center">Победители</h2>
-  {% if top3|length >= 3 %}
-  <div class="podium">
-  <div class="podium-item podium-2">
-    <span class="medal">🥈</span>
-    <a href="{{ top3.1.alt_url }}" target="_blank">
-      <img src="{{ top3.1.logo_url }}" alt="{{ top3.1.name }}">
-    </a>
-    <div><a href="{{ top3.1.alt_url }}" target="_blank">{{ top3.1.name }}</a></div>
-  </div>
+        <h2 class="text-center">Победители</h2>
+        <div class="podium">
+            <div class="podium-item podium-2">
+                {% if top3|length >= 2 %}
+                    <span class="medal">🥈</span>
+                    <a href="{{ top3.1.alt_url }}" target="_blank">
+                        <img src="{{ top3.1.logo_url }}" alt="{{ top3.1.name }}">
+                    </a>
+                    <div><a href="{{ top3.1.alt_url }}" target="_blank">{{ top3.1.name }}</a></div>
+                {% endif %}
+            </div>
+            <div class="podium-item podium-1">
+                <span class="medal">🥇</span>
+                <a href="{{ top3.0.alt_url }}" target="_blank">
+                    <img src="{{ top3.0.logo_url }}" alt="{{ top3.0.name }}">
+                </a>
+                <div><a href="{{ top3.0.alt_url }}" target="_blank">{{ top3.0.name }}</a></div>
+            </div>
+            <div class="podium-item podium-3">
+                {% if top3|length >= 3 %}
+                    <span class="medal">🥉</span>
+                    <a href="{{ top3.2.alt_url }}" target="_blank">
+                        <img src="{{ top3.2.logo_url }}" alt="{{ top3.2.name }}">
+                    </a>
+                    <div><a href="{{ top3.2.alt_url }}" target="_blank">{{ top3.2.name }}</a></div>
+                {% endif %}
+            </div>
+        </div>
 
-  <div class="podium-item podium-1">
-    <span class="medal">🥇</span>
-    <a href="{{ top3.0.alt_url }}" target="_blank">
-      <img src="{{ top3.0.logo_url }}" alt="{{ top3.0.name }}">
-    </a>
-    <div><a href="{{ top3.0.alt_url }}" target="_blank">{{ top3.0.name }}</a></div>
-  </div>
-
-  <div class="podium-item podium-3">
-    <span class="medal">🥉</span>
-    <a href="{{ top3.2.alt_url }}" target="_blank">
-      <img src="{{ top3.2.logo_url }}" alt="{{ top3.2.name }}">
-    </a>
-    <div><a href="{{ top3.2.alt_url }}" target="_blank">{{ top3.2.name }}</a></div>
-  </div>
-</div>
-  {% endif %}
-
-{% if rest %}
-<h3 class="text-center">Остальные игры</h3>
-<div class="rest-grid">
-  {% for game in rest %}
-  <div class="rest-item">
-    <a href="{{ game.alt_url }}" target="_blank">
-      <img src="{{ game.logo_url }}" alt="{{ game.name }}">
-    </a>
-    <div>
-      <a href="{{ game.alt_url }}" target="_blank">
-        #{{ forloop.counter|add:3 }}: {{ game.name }}
-      </a>
+        {% if rest %}
+            <h3 class="text-center">Остальные игры</h3>
+            <div class="rest-grid">
+                {% for game in rest %}
+                    <div class="rest-item">
+                        <a href="{{ game.alt_url }}" target="_blank">
+                            <img src="{{ game.logo_url }}" alt="{{ game.name }}">
+                        </a>
+                        <div>
+                            <a href="{{ game.alt_url }}" target="_blank">
+                                #{{ forloop.counter|add:3 }}: {{ game.name }}
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <h3 class="text-center">Статистика</h3>
+        <div class="text-center stats">
+            {% for res in result %}
+                {% if res %}
+                    {% if forloop.counter > 1 %}&nbsp;•&nbsp;{% endif %}{{ res }}
+                {% endif %}
+            {% endfor %}
+        </div>
     </div>
-  </div>
-  {% endfor %}
-</div>
-{% endif %}
-<h3 class="text-center">Статистика</h3>
-<div class="text-center stats">
-        {% for res in result %}
-            {% if res %}
-            {% if forloop.counter > 1 %}&nbsp;•&nbsp;{% endif %}{{ res }}
-            {% endif %}
-        {% endfor %}
-</div>
-</div>
 {% endblock %}

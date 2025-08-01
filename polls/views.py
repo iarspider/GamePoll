@@ -219,10 +219,13 @@ def poll_stats(request, poll_id):
             elif p[(B, A)] > p[(A, B)]:
                 wins[B] += 1
 
+        for G in games_set.difference(copy.copy(list(wins.keys()))):
+            wins[G] = 0
+
         wins = dict(sorted(wins.items(), key=itemgetter(1), reverse=True))
 
         res_ = list(wins.keys())
-        return res_, wins[res_[0]] == wins[res_[1]]
+        return res_, len(res_) > 1 and wins[res_[0]] == wins[res_[1]]
 
     if not request.user.is_superuser:
         tmp = (
