@@ -85,7 +85,4 @@ function init_addvote() {
 
     // Exclusion checkboxes functionallity
     $('input[name^="game_"]').click(exclude_click);
-
-    // Update icons on change with smooth transition
-    $('input[type="radio"]').on('change', premium_click);
 }

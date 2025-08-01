@@ -93,7 +93,7 @@ def game_edit(request, game_id):
 
         # Redirect to the "games/" page upon successful submission
         return redirect(reverse("game_list"))
-    game = get_object_or_404(Game, game_id)
+    game = get_object_or_404(Game, id=game_id)
 
     return render(request, "polls/game_add.html", {"game": game})
 
@@ -103,12 +103,10 @@ def game_list(request):
     if not request.user.is_superuser:
         raise PermissionDenied()
 
-    paginator = Paginator(Game.objects.all(), 10, allow_empty_first_page=True)
-    page_no = request.GET.get("page", 1)
-    page_obj = paginator.get_page(page_no)
+    games_qs = Game.objects.order_by("completed", "-id").all()
 
     return render(
-        request, "polls/game_list.html", context={"games": page_obj, "can_edit": False}
+        request, "polls/game_list.html", context={"games": games_qs, "can_edit": False}
     )
 
 
@@ -202,9 +200,23 @@ def poll_add(request):
 
 
 @login_required
-def poll_toggle_lock(request, poll_id, new_status):
+def poll_toggle_lock(request, poll_id=None, new_status=None):
     if not request.user.is_superuser:
         raise PermissionDenied()
+
+    if request.method == "POST":
+        poll_id = request.POST.get("poll_id")
+        new_status = request.POST.get("new_status")
+        try:
+            poll = Poll.objects.get(id=poll_id)
+        except Poll.DoesNotExist:
+            return HttpResponseRedirect(reverse("poll_list"))
+
+        if new_status in dict(Poll.STATUS_CHOICES):
+            poll.status = new_status
+            poll.save(update_fields=["status"])
+
+        return HttpResponseRedirect(reverse("poll_list"))
 
     try:
         poll = Poll.objects.get(id=poll_id)
@@ -219,29 +231,12 @@ def poll_toggle_lock(request, poll_id, new_status):
             "poll_id": poll.id,
             "action": {
                 "active": "Открыть",
-                "closed": "Завершить",
+                "closed": "Остановить",
                 "finished": "Закрыть",
-            },
+            }[new_status],
             "new_status": new_status,
         },
     )
-
-
-@login_required
-def poll_toggle_confirm(request, poll_id):
-    if not request.user.is_superuser:
-        raise PermissionDenied()
-
-    try:
-        poll = Poll.objects.get(id=poll_id)
-    except Poll.DoesNotExist:
-        return HttpResponseRedirect(reverse("poll_list"))
-
-    if request.method == "POST":
-        poll.status = request.data["new_status"]
-        poll.save()
-
-    return HttpResponseRedirect(reverse("poll_list"))
 
 
 @login_required

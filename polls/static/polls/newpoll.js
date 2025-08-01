@@ -52,12 +52,12 @@ function init_new_poll() {
         // Add list
         if (gameItem.closest("#allGamesList").length) {
             gameItem.appendTo("#selectedGamesList");
-            $(this).text("Del");
+            $(this).text("Убрать");
             selectedGameIds.push(gameId);
         } else {
             // Del list
             gameItem.appendTo("#allGamesList");
-            $(this).text("Add");
+            $(this).text("Добавить");
             const index = selectedGameIds.indexOf(gameId);
             selectedGameIds.splice(index, 1);
         }

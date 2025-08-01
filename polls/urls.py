@@ -19,7 +19,9 @@ poll_patterns = [
         admin_views.poll_toggle_lock,
         name="poll_toggle_lock",
     ),
-    path("toggle_lock_confirm/<int:poll_id>", admin_views.poll_toggle_confirm, name="poll_toggle_confirm"),
+    path("toggle_lock/",
+         admin_views.poll_toggle_lock,
+         name="poll_toggle_lock_confirm"),
     path("stats/<int:poll_id>", views.poll_stats, name="poll_stats"),
     path("details/<int:poll_id>", admin_views.poll_detailed_stats, name="poll_details"),
 ]

@@ -3,78 +3,85 @@
 {% extends 'polls/layout.html' %}
 
 {% block styles %}
-<style>
-  .poll-card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    transition: transform 0.2s;
-  }
-  .poll-card:hover {
-    transform: scale(1.01);
-  }
-  .poll-card-title {
-    font-size: 1.3rem;
-    font-weight: bold;
-  }
-  .poll-card-games {
-    font-size: 0.9rem;
-    color: #666;
-  }
-  .poll-actions {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-    flex-wrap: wrap;
-  }
-</style>
+    <style>
+        .poll-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+
+        .poll-card:hover {
+            transform: scale(1.01);
+        }
+
+        .poll-card-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .poll-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-  <h2>Список голосований</h2>
+    <div class="container mt-4">
+        <h2>Список голосований</h2>
 
-  {% if request.user.is_superuser %}
-    <a class="btn btn-secondary mb-3" href="{% url "poll_add" %}">Создать</a>
-  {% endif %}
+        {% if request.user.is_superuser %}
+            <a class="btn btn-secondary mb-3" href="{% url "poll_add" %}">Создать</a>
+        {% endif %}
 
-  {% for poll in polls %}
-    <div class="poll-card">
-      <div class="poll-card-title">{{ poll.title }}</div>
+        {% for poll in polls %}
+            <div class="poll-card">
+                <div class="poll-card-title">{{ poll.title }}</div>
+                <div class="text-muted small mb-2">🎮 {{ poll.games.count }} игр</div>
 
-      {% if not request.user.is_superuser %}
-      <div class="poll-card-games mb-2">
-        {% for game in poll.games.all %}
-          <a href="{{ game.alt_url }}" target="_blank">{{ game.name }}</a>{% if not forloop.last %}, {% endif %}
+                <div class="poll-actions">
+                    <a href="{% url "vote_add" poll.id %}" class="btn btn-primary btn-sm">🗳 Проголосовать</a>
+                    <a href="{% url "poll_stats" poll.id %}" class="btn btn-outline-secondary btn-sm">🏆 Результаты</a></div>
+
+                {% if request.user.is_superuser %}
+                    <div class="btn-group text-end mt-4" role="group">
+                        <a href="{% url 'poll_toggle_lock' poll.id 'active' %}"
+                           class="btn {% if poll.status == 'active' %}btn-outline-primary border-3{% else %}btn-outline-secondary{% endif %}"
+                           {% if poll.status == 'active' %}disabled{% endif %}>
+                            Активно
+                        </a>
+
+                        <a href="{% url 'poll_toggle_lock' poll.id 'closed' %}"
+                           class="btn {% if poll.status == 'closed' %}btn-outline-warning border-3{% else %}btn-outline-secondary{% endif %}"
+                           {% if poll.status == 'closed' %}disabled{% endif %}>
+                            Завершено
+                        </a>
+
+                        <a href="{% url 'poll_toggle_lock' poll.id 'finished' %}"
+                           class="btn {% if poll.status == 'finished' %}btn-outline-success border-3{% else %}btn-outline-secondary{% endif %}"
+                           {% if poll.status == 'finished' %}disabled{% endif %}>
+                            Итоги подведены
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>Нет доступных голосований</p>
         {% endfor %}
-      </div>
-      {% endif %}
 
-      <div class="poll-actions">
-        <a href="{% url "vote_add" poll.id %}" class="btn btn-primary btn-sm">🗳 Проголосовать</a>
-        <a href="{% url "poll_stats" poll.id %}" class="btn btn-outline-secondary btn-sm">🏆 Результаты</a>
-      {% if request.user.is_superuser %}
-        <a href="{% url "poll_details" poll.id %}" class="btn btn-outline-secondary btn-sm">🧐 Таблица</a>
-        <a href="{% url "poll_toggle_lock" poll.id %}" class="btn btn-outline-secondary btn-sm">
-          {% if poll.closed %} 🔒 Locked {% else %} 🔓 Active {% endif %}
-        </a>
-      {% endif %}
-      </div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% for page_num in polls.paginator.page_range %}
+                    <li class="page-item{% if page_num == polls.number %} active{% endif %}">
+                        <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </nav>
     </div>
-  {% empty %}
-    <p>Нет доступных голосований</p>
-  {% endfor %}
-
-  <nav aria-label="Page navigation">
-    <ul class="pagination">
-      {% for page_num in polls.paginator.page_range %}
-        <li class="page-item{% if page_num == polls.number %} active{% endif %}">
-          <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
-        </li>
-      {% endfor %}
-    </ul>
-  </nav>
-</div>
 {% endblock %}
