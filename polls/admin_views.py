@@ -160,9 +160,9 @@ def game_import(request):
                 small_logo_url=game_data.get(
                     "capsule_imagev5", game_data["capsule_image"]
                 ),
-                tags=game_tags,
             )
             game.save()
+            game.tags.set(game_tags)
 
             messages.success(request, f"Game {game} added successfully")
 
