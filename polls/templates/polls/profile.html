@@ -52,7 +52,7 @@
       {% for poll in polls %}
       <li class="list-group-item d-flex justify-content-between align-items-center">
         {{ poll }}
-        {% if not poll.closed %}
+        {% if poll.status == "active" %}
         <a href="{% url "poll_unvote" poll.id %}" class="btn btn-sm btn-outline-primary">Переголосовать</a>
         {% endif %}
       </li>
