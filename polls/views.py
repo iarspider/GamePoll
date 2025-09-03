@@ -1,16 +1,17 @@
-import datetime
+import copy
 import json
 import re
+from collections import defaultdict
+from itertools import combinations
+from operator import itemgetter
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
-import polls.models
 from GamePoll import settings
 from polls.models import TwitchUser, Poll, Vote, GameVote, Game, PollBlock
 
@@ -26,19 +27,12 @@ def index(request):
 def poll_list(request):
     if request.user.is_superuser:
         paginator = Paginator(
-            Poll.objects.order_by("start_date").all(), 10, allow_empty_first_page=True
+            Poll.objects.order_by("-id").all(), 10, allow_empty_first_page=True
         )
     else:
-        gmtnow = (
-            datetime.datetime.now(datetime.timezone.utc)
-            .replace(microsecond=0)
-            .isoformat()
-            .replace("+00:00", "Z")
-        )
         paginator = Paginator(
-            Poll.objects.filter(start_date__lt=gmtnow, closed=False)
-            .exclude(pollblock__person=request.user)
-            .order_by("start_date")
+            Poll.objects.exclude(status="finished", pollblock__person=request.user)
+            .order_by("-id")
             .distinct(),
             10,
             allow_empty_first_page=True,
@@ -105,11 +99,13 @@ def poll_vote(request, poll_id):
     except Poll.DoesNotExist:
         return render(request, "polls/poll_not_found.html")
 
-    if poll.closed:
+    if poll.status != "active":
         return render(request, "polls/poll_locked.html")
 
     if PollBlock.objects.filter(person=request.user, poll=poll).count() > 0:
-        return render(request, "polls/second_vote_attempt.html", context={"id": poll_id})
+        return render(
+            request, "polls/second_vote_attempt.html", context={"id": poll_id}
+        )
 
     try:
         twitch_user = TwitchUser.objects.get(user=request.user)
@@ -123,10 +119,8 @@ def poll_vote(request, poll_id):
         except Poll.DoesNotExist:
             return HttpResponse(f"Poll with id {poll_id} not found", status=400)
 
-        if poll.closed:
+        if poll.status != "active":
             return HttpResponse(f"Poll with id {poll_id} is closed", status=400)
-
-        boost_id = int(data.get("game_boost", -1))
 
         # Validation
         s1 = set(data["game_order"])
@@ -134,11 +128,9 @@ def poll_vote(request, poll_id):
         s3 = set(x.id for x in poll.games.all())
 
         if not (s1 == s2 and s2 == s3):
-            return HttpResponse(f"Mismatch between game_order, game_states and poll_games", status=400)
-
-        if boost_id != -1 and ((twitch_user and twitch_user.subscribed) or settings.DEBUG):
-            if boost_id not in s1:
-                return HttpResponse(f"Invalid boosted game", status=400)
+            return HttpResponse(
+                f"Mismatch between game_order, game_states and poll_games", status=400
+            )
 
         vote = Vote()
         vote.poll = poll
@@ -149,6 +141,7 @@ def poll_vote(request, poll_id):
         vote.owl = data["owl_checkbox"]
         vote.bee = data["bee_checkbox"]
         vote.cheese = data["cheese_checkbox"]
+        vote.sub_vote = twitch_user.subscribed
 
         vote.save()
 
@@ -162,12 +155,6 @@ def poll_vote(request, poll_id):
             game_vote.vote = vote
             game_vote.game = Game.objects.get(id=game_id)
             game_vote.rating = (i + 1) if data["game_states"][str(game_id)] else -1
-            if (twitch_user and twitch_user.subscribed) or settings.DEBUG:
-                if game_id == boost_id:
-                    if game_vote.rating == -1:
-                        game_vote.rating = -2
-                    else:
-                        game_vote.rating += 1
 
             game_vote.save()
 
@@ -178,7 +165,7 @@ def poll_vote(request, poll_id):
         "polls/vote_add.html",
         context={
             "poll": poll,
-            "is_sub": (twitch_user and twitch_user.subscribed) or settings.DEBUG,
+            "is_sub": False,  # (twitch_user and twitch_user.subscribed) or settings.DEBUG,
         },
     )
 
@@ -194,6 +181,52 @@ def login_redirect(request):
 
 @login_required()
 def poll_stats(request, poll_id):
+    def schulze(data) -> tuple[list[int], bool]:
+        d: dict[tuple[int, int], float] = defaultdict(float)
+        p: dict[tuple[int, int], float] = defaultdict(float)
+        games_set: set[int] = set()
+
+        for ranking in data:
+            for (A, a_score, a_weight), (B, b_score, b_weight) in combinations(
+                ranking, 2
+            ):
+                games_set.update([A, B])
+                if a_score > b_score:
+                    d[(A, B)] += a_weight
+                elif a_score < b_score:
+                    d[(B, A)] += b_weight
+
+        for A, B in combinations(games_set, 2):
+            if d[(A, B)] > d[(B, A)]:
+                p[(A, B)] = d[(A, B)]
+            elif d[(B, A)] > d[(A, B)]:
+                p[(B, A)] = d[(B, A)]
+
+        for A in games_set:
+            for B in games_set:
+                if A == B:
+                    continue
+                for C in games_set:
+                    if C == A or C == B:
+                        continue
+                    p[(A, B)] = max(p[(A, B)], min(p[(A, C)], p[(C, B)]))
+
+        wins: dict[int, int] = defaultdict(int)
+
+        for A, B in combinations(games_set, 2):
+            if p[(A, B)] > p[(B, A)]:
+                wins[A] += 1
+            elif p[(B, A)] > p[(A, B)]:
+                wins[B] += 1
+
+        for G in games_set.difference(copy.copy(list(wins.keys()))):
+            wins[G] = 0
+
+        wins = dict(sorted(wins.items(), key=itemgetter(1), reverse=True))
+
+        res_ = list(wins.keys())
+        return res_, len(res_) > 1 and wins[res_[0]] == wins[res_[1]]
+
     if not request.user.is_superuser:
         tmp = (
             Poll.objects.filter(id=poll_id)
@@ -203,44 +236,52 @@ def poll_stats(request, poll_id):
         if tmp == 0:
             return redirect("poll_list")
 
-    result = {}
-    result_negative = {}
+    result = {"🦉": "", "🐝": "", "🧀": "", "🗳️": ""}
     poll = Poll.objects.get(id=poll_id)
-    for game in poll.games.all():
-        result[game.name] = 0
-        result_negative[game.name] = 0
-
-    result["🦉"] = 0
-    result["🐝"] = 0
-    result["🧀"] = 0
-
-    result_keys = tuple(result.keys())
-
-    result_negative["🦉"] = 0
-    result_negative["🐝"] = 0
-    result_negative["🧀"] = 0
 
     votes = Vote.objects.filter(poll=poll)
+    data: list[list[tuple[int, int, float]]] = []
+
     for vote in votes:
-        result["🦉"] += vote.owl
-        result["🐝"] += vote.bee
-        result["🧀"] += vote.cheese
+        viewer = TwitchUser.objects.get(user=vote.person)
+
+        result["🦉"] += "🦉" * vote.owl
+        result["🐝"] += "🐝" * vote.bee
+        result["🧀"] += "🧀" * vote.cheese
+        result["🗳️"] += "🗳️"
 
         game_votes = GameVote.objects.filter(vote=vote)
-        for game_vote in game_votes:
-            if game_vote.rating > 0:
-                result[game_vote.game.name] += game_vote.rating
-            else:
-                result_negative[game_vote.game.name] += abs(game_vote.rating)
+        data.append(
+            sorted(
+                [
+                    (gv.game.id, gv.rating, 1.5 if viewer.subscribed else 1.0)
+                    for gv in game_votes
+                ],
+                key=itemgetter(1),
+            )
+        )
+
+    for k in copy.copy(tuple(result.keys())):
+        if not result[k]:
+            result.pop(k)
+
+    res, tie = schulze(data)
+    top3_qs = Game.objects.filter(id__in=res[:3])
+    top3 = sorted(top3_qs, key=lambda g: res.index(g.id))
+
+    rest_qs = Game.objects.filter(id__in=res[3:])
+    rest = sorted(rest_qs, key=lambda g: res.index(g.id))
 
     return render(
         request,
         "polls/vote_stats.html",
         context={
             "poll_title": poll.title,
-            "result": [result[k] for k in result_keys],
-            "result_negative": [result_negative[k] for k in result_keys],
-            "result_keys": list(result.keys()),
+            "top3": top3,
+            "rest": rest,
+            "result": list(result.values()),
+            "top_tie": tie,
+            "vote_count": votes.count(),
         },
     )
 
@@ -258,7 +299,7 @@ def poll_unvote(request, poll_id):
     except Poll.DoesNotExist:
         return render(request, "polls/poll_not_found.html")
 
-    if poll.closed:
+    if poll.status != "active":
         return render(request, "polls/poll_locked.html")
 
     try:
@@ -282,7 +323,7 @@ def poll_unvote_ok(request, poll_id):
     except Poll.DoesNotExist:
         return render(request, "polls/poll_not_found.html")
 
-    if poll.closed:
+    if poll.status != "active":
         return render(request, "polls/poll_locked.html")
 
     return render(request, "polls/retract_vote_ok.html", context={"poll": poll})

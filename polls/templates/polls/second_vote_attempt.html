@@ -1,8 +1,8 @@
-<!-- polls/templates/second_vote_attempt.html -->
-
 {% extends "polls/generic_message.html" %}
-
 {% block title %}Повторное голосование{% endblock %}
-{% block icon %}🚫{% endblock %}  {# Prohibited icon for second vote attempt #}
-{% block icon_color %}#FF6347{% endblock %}  {# Tomato color for prohibited icon #}
-{% block message %}Вы уже участвовали в этом голосовании, но можете переголосовать, нажав <a href="{% url "poll_unvote" id %}">сюда</a>. {% endblock %}
+{% block icon %}🚫{% endblock %}
+{% block icon_color %}#FF6347{% endblock %}
+{% block message %}Вы уже участвовали в этом голосовании, но можете переголосовать, нажав <a href="{% url "poll_unvote" id %}">сюда</a>.{% endblock %}
+{% block buttons %}
+  <a href="{% url 'poll_list' %}" class="btn btn-secondary">К списку голосований</a>
+{% endblock %}

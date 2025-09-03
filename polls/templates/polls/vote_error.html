@@ -1,19 +1,8 @@
-<!-- polls/templates/vote_error.html -->
-
 {% extends "polls/generic_message.html" %}
-
 {% block title %}Ошибка при голосовании{% endblock %}
-
 {% block icon %}⚠️{% endblock %}
 {% block icon_color %}red{% endblock %}
-
-{% block message %}
-    Ваш голос не был засчитан потому что Паук опять всё сломал.
-    Потыкайте его палочкой, чтобы он всё починил.
-{% endblock %}
-
-{% block return %}
-    <p class="card-text">
-        <a href="{% url 'poll_list' %}" class="btn btn-danger">Вернуться к списку опросов</a>
-    </p>
+{% block message %}Ваш голос не был засчитан, потому что что-то пошло не так. Попробуйте ещё раз чуть позже.{% endblock %}
+{% block buttons %}
+  <a href="{% url 'poll_list' %}" class="btn btn-danger">Вернуться к списку голосований</a>
 {% endblock %}

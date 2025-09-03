@@ -12,7 +12,7 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 
-from polls.models import Game, Poll, Tag, GameTag
+from polls.models import Game, Poll, Tag
 
 
 class HTMLFilter(HTMLParser, ABC):
@@ -93,7 +93,7 @@ def game_edit(request, game_id):
 
         # Redirect to the "games/" page upon successful submission
         return redirect(reverse("game_list"))
-    game = get_object_or_404(Game, game_id)
+    game = get_object_or_404(Game, id=game_id)
 
     return render(request, "polls/game_add.html", {"game": game})
 
@@ -103,12 +103,10 @@ def game_list(request):
     if not request.user.is_superuser:
         raise PermissionDenied()
 
-    paginator = Paginator(Game.objects.all(), 10, allow_empty_first_page=True)
-    page_no = request.GET.get("page", 1)
-    page_obj = paginator.get_page(page_no)
+    games_qs = Game.objects.order_by("completed", "-id").all()
 
     return render(
-        request, "polls/game_list.html", context={"games": page_obj, "can_edit": False}
+        request, "polls/game_list.html", context={"games": games_qs, "can_edit": False}
     )
 
 
@@ -142,6 +140,14 @@ def game_import(request):
                 continue
 
             game_data = game_data[str(game_id)]["data"]
+            game_tags: list[Tag] = []
+
+            for tag_ in game_data["genres"]:
+                game_tags.append(
+                    Tag.objects.get_or_create(
+                        id=tag_["id"], defaults={"name": tag_["description"]}
+                    )[0]
+                )
 
             game = Game(
                 name=game_data["name"],
@@ -156,16 +162,7 @@ def game_import(request):
                 ),
             )
             game.save()
-
-            for tag_ in game_data["genres"]:
-                this_tag = Tag.objects.get_or_create(
-                    id=tag_["id"], defaults={"name": tag_["description"]}
-                )[0]
-
-                game_tag = GameTag()
-                game_tag.game = game
-                game_tag.tag = this_tag
-                game_tag.save()
+            game.tags.set(game_tags)
 
             messages.success(request, f"Game {game} added successfully")
 
@@ -182,9 +179,10 @@ def poll_add(request):
     if request.method == "POST":
         data = json.loads(request.body)
         poll = Poll()
-        poll.anonymous = data["anonymous"]
-        poll.start_date = datetime.datetime.fromisoformat(data["start_date"])
-        poll.end_date = datetime.datetime.fromisoformat(data["end_date"])
+        poll.anonymous = False
+        # poll.anonymous = data["anonymous"]
+        # poll.start_date = datetime.datetime.fromisoformat(data["start_date"])
+        # poll.end_date = datetime.datetime.fromisoformat(data["end_date"])
         poll.title = data["title"]
         poll.save()
 
@@ -193,25 +191,37 @@ def poll_add(request):
 
         poll.save()
 
-        return HttpResponse(reverse("poll_list"))
+        return redirect("poll_added", poll_id=poll.id)
 
-    return render(request, "polls/poll_add.html",
-                  context={"games": Game.objects.filter(completed=False).order_by("-id")})
+    return render(
+        request,
+        "polls/poll_add.html",
+        context={"games": Game.objects.filter(completed=False).order_by("-id")},
+    )
 
 
 @login_required
-def poll_toggle_lock(request, poll_id):
+def poll_toggle_lock(request, poll_id=None, new_status=None):
     if not request.user.is_superuser:
         raise PermissionDenied()
+
+    if request.method == "POST":
+        poll_id = request.POST.get("poll_id")
+        new_status = request.POST.get("new_status")
+        try:
+            poll = Poll.objects.get(id=poll_id)
+        except Poll.DoesNotExist:
+            return HttpResponseRedirect(reverse("poll_list"))
+
+        if new_status in dict(Poll.STATUS_CHOICES):
+            poll.status = new_status
+            poll.save(update_fields=["status"])
+
+        return HttpResponseRedirect(reverse("poll_list"))
 
     try:
         poll = Poll.objects.get(id=poll_id)
     except Poll.DoesNotExist:
-        return HttpResponseRedirect(reverse("poll_list"))
-
-    if request.method == "POST":
-        poll.closed = not poll.closed
-        poll.save()
         return HttpResponseRedirect(reverse("poll_list"))
 
     return render(
@@ -220,7 +230,12 @@ def poll_toggle_lock(request, poll_id):
         context={
             "poll_title": poll.title,
             "poll_id": poll.id,
-            "action": "Unlock" if poll.closed else "Lock",
+            "action": {
+                "active": "Открыть",
+                "closed": "Остановить",
+                "finished": "Закрыть",
+            }[new_status],
+            "new_status": new_status,
         },
     )
 
@@ -256,6 +271,13 @@ def poll_detailed_stats(request, poll_id):
 
         res.append(tmp)
 
-    return render(
-        request, "polls/vote_details.html", {"keys": keys, "results": res}
-    )
+    return render(request, "polls/vote_details.html", {"keys": keys, "results": res})
+
+
+@login_required
+def poll_added(request, poll_id):
+    if not request.user.is_superuser:
+        raise PermissionDenied()
+
+    poll = get_object_or_404(Poll, pk=poll_id)
+    return render("polls/poll_added.html", {"poll": poll})

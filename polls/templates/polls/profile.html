@@ -1,52 +1,67 @@
 {% extends 'polls/layout.html' %}
 
 {% block content %}
-    <h1>User profile</h1>
-    <hr>
-    <table>
-        <tr>
-            <td>Имя пользователя</td>
+<div class="container mt-4">
+  <h1 class="mb-3">Профиль пользователя</h1>
+
+  <div class="card mb-4">
+    <div class="card-header">Информация о пользователе</div>
+    <div class="card-body p-0">
+      <table class="table mb-0">
+        <tbody>
+          <tr>
+            <th>Имя пользователя</th>
             <td>{{ user.username }}</td>
-        </tr>
-        <tr>
-            <td>Отображаемое имя</td>
-            <td> {{ user.first_name }}</td>
-        </tr>
-        <tr>
-            <td>Email</td>
+          </tr>
+          <tr>
+            <th>Отображаемое имя</th>
+            <td>{{ user.first_name }}</td>
+          </tr>
+          <tr>
+            <th>Email</th>
             <td>{{ email }}</td>
-        </tr>
-        {% if twitch_user %}
-            <tr>
-                <td>Twitch ID</td>
-                <td>{{ twitch_user }}</td>
-            </tr>
-            <tr>
-                <td>Статус подписки</td>
-                <td>{% if twitch_user.subscribed %} ✅ {% else %} ❌ {% endif %} </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="2">Not a Twitch user</td>
-            </tr>
+          </tr>
+          {% if twitch_user %}
+          <tr>
+            <th>Twitch ID</th>
+            <td>{{ twitch_user }}</td>
+          </tr>
+          <tr>
+            <th>Статус подписки</th>
+            <td>{% if twitch_user.subscribed %} ✅ Подписан {% else %} ❌ Нет подписки {% endif %}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="2" class="text-muted">Не привязан Twitch-аккаунт</td>
+          </tr>
+          {% endif %}
+          {% if request.user.is_superuser %}
+          <tr>
+            <th>Права</th>
+            <td><span class="badge bg-danger">Суперпользователь</span></td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">Ваши голоса</div>
+    <ul class="list-group list-group-flush">
+      {% for poll in polls %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        {{ poll }}
+        {% if poll.status == "active" %}
+        <a href="{% url "poll_unvote" poll.id %}" class="btn btn-sm btn-outline-primary">Переголосовать</a>
         {% endif %}
-        {% if request.user.is_superuser %}
-            <tr>
-                <td>Superuser</td>
-                <td>Definitely</td>
-            </tr> {% endif %}
-    </table>
-
-    <h2>Voted in polls</h2>
-
-    <ul>
-        {% for poll in polls %}
-            <li>{{ poll }} {% if not poll.closed %} <a href="{% url "poll_unvote" poll.id %}">Переголосовать</a>{% endif %} </li>
-        {% empty %}
-            <li>No votes so far</li>
-        {% endfor %}
+      </li>
+      {% empty %}
+      <li class="list-group-item text-muted">Вы пока не голосовали</li>
+      {% endfor %}
     </ul>
+  </div>
 
-    <h2><a href="{% url "poll_list" %}">К списку голосований</a></h2>
-
+  <a href="{% url "poll_list" %}" class="btn btn-secondary">← К списку голосований</a>
+</div>
 {% endblock %}

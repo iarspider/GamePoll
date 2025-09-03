@@ -1,7 +1,8 @@
-<!-- polls/templates/poll_closed.html -->
 {% extends "polls/generic_message.html" %}
-
 {% block title %}Голосование окончено{% endblock %}
-{% block icon %}🔒{% endblock %}  {# Lock icon for closed poll #}
-{% block icon_color %}#808080{% endblock %}  {# Gray color for lock icon #}
-{% block message %}{% endblock %}
+{% block icon %}🔒{% endblock %}
+{% block icon_color %}#808080{% endblock %}
+{% block message %}Это голосование завершено и недоступно для новых голосов.{% endblock %}
+{% block buttons %}
+  <a href="{% url 'poll_list' %}" class="btn btn-secondary">К списку голосований</a>
+{% endblock %}

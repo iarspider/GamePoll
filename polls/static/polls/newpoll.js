@@ -1,7 +1,7 @@
 // Function to update the state of the Submit button
 function updateSubmitButtonState() {
     const numSelectedGames = $("#selectedGamesList li").length;
-    $("#submitBtn").prop("disabled", numSelectedGames <= 1);
+    $("#submitBtn").prop("disabled", numSelectedGames <= 2);
 }
 
 function toDatetimeLocal(date) {
@@ -52,12 +52,12 @@ function init_new_poll() {
         // Add list
         if (gameItem.closest("#allGamesList").length) {
             gameItem.appendTo("#selectedGamesList");
-            $(this).text("Del");
+            $(this).text("Убрать");
             selectedGameIds.push(gameId);
         } else {
             // Del list
             gameItem.appendTo("#allGamesList");
-            $(this).text("Add");
+            $(this).text("Добавить");
             const index = selectedGameIds.indexOf(gameId);
             selectedGameIds.splice(index, 1);
         }
@@ -82,8 +82,8 @@ function init_new_poll() {
         const apiEndpoint = $(event.target).attr('action');
 
         const data = {
-            "start_date": toISOTime("start_date"),
-            "end_date": toISOTime("end_date"),
+            //"start_date": toISOTime("start_date"),
+            //"end_date": toISOTime("end_date"),
             "selectedIds": selectedGameIds,
             "anonymous": $("#anonymous").prop("checked"),
             "title": $("#title")[0].value,

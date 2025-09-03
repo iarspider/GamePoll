@@ -1,7 +1,8 @@
-<!-- polls/templates/poll_not_found.html -->
 {% extends "polls/generic_message.html" %}
-
 {% block title %}Голосование не найдено{% endblock %}
-{% block icon %}❌{% endblock %}  {# Cross mark icon for poll not found #}
-{% block icon_color %}#FF6347{% endblock %}  {# Tomato color for cross mark #}
+{% block icon %}❌{% endblock %}
+{% block icon_color %}#FF6347{% endblock %}
 {% block message %}Указанный номер не соответствует никакому голосованию.{% endblock %}
+{% block buttons %}
+  <a href="{% url 'poll_list' %}" class="btn btn-secondary">К списку голосований</a>
+{% endblock %}

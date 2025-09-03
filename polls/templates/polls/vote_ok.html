@@ -1,9 +1,8 @@
-<!-- polls/vote_ok.html -->
-
 {% extends "polls/generic_message.html" %}
-
 {% block title %}Голос учтён{% endblock %}
-{% block icon %}🗳{% endblock %}  {# Ballot box icon for vote cast #}
-{% block icon_color %}#4CAF50{% endblock %}  {# Green color for ballot box icon #}
-{% block message %}Ваш голос засчитан. Спасибо за участие и увидися на
-    <a href="https://twitch.tv/iarspider"><i class="ba ba-twitch"></i>стримах</a>!{% endblock %}
+{% block icon %}🗳{% endblock %}
+{% block icon_color %}#4CAF50{% endblock %}
+{% block message %}Ваш голос засчитан. Спасибо за участие!{% endblock %}
+{% block buttons %}
+  <a href="{% url 'poll_list' %}" class="btn btn-secondary">К списку голосований</a>
+{% endblock %}
