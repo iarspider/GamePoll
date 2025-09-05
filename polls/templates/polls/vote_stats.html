@@ -98,7 +98,7 @@
         <div class="podium">
             <div class="podium-item podium-2">
                 {% if top3|length >= 2 %}
-                    <span class="medal">🥈</span>
+                    {% if not top_tie %}<span class="medal">🥈</span>{% endif %}
                     <a href="{{ top3.1.alt_url }}" target="_blank">
                         <img src="{{ top3.1.logo_url }}" alt="{{ top3.1.name }}">
                     </a>
@@ -106,7 +106,7 @@
                 {% endif %}
             </div>
             <div class="podium-item podium-1">
-                <span class="medal">🥇</span>
+                {% if not top_tie %}<span class="medal">🥇</span>{% endif %}
                 <a href="{{ top3.0.alt_url }}" target="_blank">
                     <img src="{{ top3.0.logo_url }}" alt="{{ top3.0.name }}">
                 </a>
@@ -114,7 +114,7 @@
             </div>
             <div class="podium-item podium-3">
                 {% if top3|length >= 3 %}
-                    <span class="medal">🥉</span>
+                    {% if not top_tie %}<span class="medal">🥉</span>{% endif %}
                     <a href="{{ top3.2.alt_url }}" target="_blank">
                         <img src="{{ top3.2.logo_url }}" alt="{{ top3.2.name }}">
                     </a>

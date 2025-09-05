@@ -1,6 +1,6 @@
 <!-- poll_list.html -->
-
 {% extends 'polls/layout.html' %}
+{% load pluralize %}
 
 {% block styles %}
     <style>
@@ -42,11 +42,14 @@
         {% for poll in polls %}
             <div class="poll-card">
                 <div class="poll-card-title">{{ poll.title }}</div>
-                <div class="text-muted small mb-2">🎮 {{ poll.games.count }} игр</div>
+                <div class="text-muted small mb-2">🎮 {{ poll.games.count | ru_plural:"игра,игры,игр" }} {% if request.user.is_superuser %} &bull; 🗳 {{ poll.vote_set.count | ru_plural:"голос,голоса,голосов" }} {% endif %}</div>
 
                 <div class="poll-actions">
                     <a href="{% url "vote_add" poll.id %}" class="btn btn-primary btn-sm">🗳 Проголосовать</a>
-                    <a href="{% url "poll_stats" poll.id %}" class="btn btn-outline-secondary btn-sm">🏆 Результаты</a></div>
+                    <a href="{% url "poll_stats" poll.id %}" class="btn btn-outline-secondary btn-sm">🏆 Результаты</a>
+                    {% if request.user.is_superuser %}
+                    <a href="{% url "poll_details" poll.id %}" class="btn btn-outline-secondary btn-sm">📑 Голоса</a>
+                {% endif %}</div>
 
                 {% if request.user.is_superuser %}
                     <div class="btn-group text-end mt-4" role="group">

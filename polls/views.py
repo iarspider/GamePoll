@@ -181,12 +181,12 @@ def login_redirect(request):
 
 @login_required()
 def poll_stats(request, poll_id):
-    def schulze(data) -> tuple[list[int], bool]:
+    def schulze(votez) -> tuple[list[int], bool]:
         d: dict[tuple[int, int], float] = defaultdict(float)
         p: dict[tuple[int, int], float] = defaultdict(float)
         games_set: set[int] = set()
 
-        for ranking in data:
+        for ranking in votez:
             for (A, a_score, a_weight), (B, b_score, b_weight) in combinations(
                 ranking, 2
             ):
