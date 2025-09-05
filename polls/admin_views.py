@@ -290,4 +290,4 @@ def poll_added(request, poll_id):
         raise PermissionDenied()
 
     poll = get_object_or_404(Poll, pk=poll_id)
-    return render("polls/poll_added.html", {"poll": poll})
+    return render(request, "polls/poll_added.html", {"poll": poll})
