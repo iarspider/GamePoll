@@ -10,7 +10,7 @@
 
             <div id="gameInputs">
                 <div class="form-group">
-                    <label for="steam_ids">Steam ID:</label>
+                    <label for="steam_ids">Steam ID/URL:</label>
                     <input class="form-control" name="steam_ids" required>
                 </div>
             </div>
@@ -25,7 +25,7 @@
         function addGameInput() {
             const container = document.getElementById('gameInputs');
             const newInput = document.createElement('div');
-            newInput.innerHTML = '<div class="form-group"><label for="steam_id">Steam ID:</label><input class="form-control" name="steam_ids" required></div>';
+            newInput.innerHTML = '<div class="form-group"><label for="steam_id">Steam ID/URL:</label><input class="form-control" name="steam_ids" required></div>';
             container.appendChild(newInput);
         }
     </script>
