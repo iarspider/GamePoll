@@ -28,6 +28,10 @@
             margin-top: 0.5rem;
             flex-wrap: wrap;
         }
+
+        a.btn.disabled {
+            cursor: not-allowed;
+        }
     </style>
 {% endblock %}
 
@@ -45,8 +49,8 @@
                 <div class="text-muted small mb-2">🎮 {{ poll.games.count | ru_plural:"игра,игры,игр" }} {% if request.user.is_superuser %} &bull; 🗳 {{ poll.vote_set.count | ru_plural:"голос,голоса,голосов" }} {% endif %}</div>
 
                 <div class="poll-actions">
-                    <a href="{% url "vote_add" poll.id %}" class="btn btn-primary btn-sm">🗳 Проголосовать</a>
-                    <a href="{% url "poll_stats" poll.id %}" class="btn btn-outline-secondary btn-sm">🏆 Результаты</a>
+                    <a href="{% url "vote_add" poll.id %}" class="btn btn-primary btn-sm {% if poll.status != "active" %}disabled{% endif %}" {% if poll.status != "active" %}aria-disabled="true"{% endif %}>🗳 Проголосовать</a>
+                    <a href="{% url "poll_stats" poll.id %}" class="btn btn-outline-secondary btn-sm {% if poll.status != "finished" %}disabled{% endif %}" {% if poll.status != "finished" %}aria-disabled="true"{% endif %}>🏆 Результаты</a>
                     {% if request.user.is_superuser %}
                     <a href="{% url "poll_details" poll.id %}" class="btn btn-outline-secondary btn-sm">📑 Голоса</a>
                 {% endif %}</div>
