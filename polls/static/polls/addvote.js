@@ -75,7 +75,7 @@ function init_addvote() {
     $("#sortable-list").sortable({handle: ".handle"})
 
     // Shuffle button functionality
-    $("#shuffleButton").click(shuffle_click);
+    // $("#shuffleButton").click(shuffle_click);
 
     // Form submission functionality
     $("#voteForm").submit(cast_click);
@@ -85,4 +85,6 @@ function init_addvote() {
 
     // Exclusion checkboxes functionallity
     $('input[name^="game_"]').click(exclude_click);
+
+    shuffle_click();
 }
