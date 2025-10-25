@@ -16,8 +16,7 @@ from platform import platform
 from dotenv import dotenv_values
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -27,15 +26,10 @@ config = dotenv_values(".env")
 SECRET_KEY = config["DJANGO_SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
 HTTP_MODE_SUPPORT = True
 
 SESSION_COOKIE_SECURE = HTTP_MODE_SUPPORT
 CSRF_COOKIE_SECURE = HTTP_MODE_SUPPORT
-
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "vote.iarazumov.com", "bote.iarazumov.com"]
-
 
 # Application definition
 
@@ -105,11 +99,15 @@ WSGI_APPLICATION = "GamePoll.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
+SQLITE_PATH = os.getenv("DJANGO_SQLITE_PATH", str(BASE_DIR / "db/db.sqlite3"))
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": SQLITE_PATH,
+        "OPTIONS": {
+            "timeout": 20,  # ожидание при блокировке
+            "init_command": "PRAGMA journal_mode=WAL;"
+        },
     }
 }
 
@@ -118,18 +116,6 @@ DATABASES = {
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    # {
-    #     "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    # },
-    # {
-    #     "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    # },
-    # {
-    #     "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    # },
-    # {
-    #     "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    # },
 ]
 
 
@@ -149,7 +135,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+STATIC_ROOT = BASE_DIR / "static/"
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -161,34 +147,31 @@ SOCIAL_AUTH_TWITCH_SECRET = config.get("SOCIAL_AUTH_TWITCH_SECRET")
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = HTTP_MODE_SUPPORT
 BROADCASTER_ID = "48432016"
 
+LOG_DIR = Path(os.getenv("DJANGO_LOG_DIR", BASE_DIR / "logs"))
+LOG_DIR.mkdir(exist_ok=True)
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {"format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s"},
+        "simple":  {"format": "%(levelname)s %(message)s"},
+    },
     "handlers": {
-        "file": {
-            "level": "DEBUG",
+        "file_app": {
             "class": "logging.FileHandler",
-            "filename": "/var/log/django/debug.log"
-            if platform().lower().startswith("Linux")
-            else "debug.log",
+            "filename": os.path.join(LOG_DIR, "app.log"),
             "formatter": "verbose",
         },
-        "console": {
-            "level": "WARNING",
-            "class": "logging.StreamHandler",
+        "file_django": {
+            "class": "logging.FileHandler",
+            "filename": os.path.join(LOG_DIR, "django.log"),
+            "formatter": "verbose",
         },
-    },
-    "formatters": {
-        "verbose": {
-            "format": "{levelname} {asctime} {module} {message}",
-            "style": "{",
-        },
+        "console": {"class": "logging.StreamHandler", "formatter": "simple"},
     },
     "loggers": {
-        "django": {
-            "handlers": ["file", "console"],
-            "level": "DEBUG",
-            "propagate": True,
-        },
+        "django": {"handlers": ["file_django", "console"], "level": "INFO"},
+        "":       {"handlers": ["file_app", "console"],   "level": "INFO"},  # root logger
     },
 }
