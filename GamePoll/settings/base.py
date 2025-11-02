@@ -100,6 +100,8 @@ WSGI_APPLICATION = "GamePoll.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+SQLITE_PATH = os.getenv("DJANGO_SQLITE_PATH", str(BASE_DIR / "db/db.sqlite3"))
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
