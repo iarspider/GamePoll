@@ -30,6 +30,7 @@ HTTP_MODE_SUPPORT = True
 
 SESSION_COOKIE_SECURE = HTTP_MODE_SUPPORT
 CSRF_COOKIE_SECURE = HTTP_MODE_SUPPORT
+CSRF_TRUSTED_ORIGINS = ["https://vote.iarazumov.com", "https://bote.iarazumov.com"]
 
 # Application definition
 
