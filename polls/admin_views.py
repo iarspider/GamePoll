@@ -1,4 +1,3 @@
-import datetime
 import json
 import re
 from abc import ABC
@@ -8,8 +7,7 @@ import requests
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.core.paginator import Paginator
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 
 from polls.models import Game, Poll, Tag
@@ -187,27 +185,35 @@ def poll_add(request):
         raise PermissionDenied()
 
     if request.method == "POST":
-        data = json.loads(request.body)
+        title = request.POST.get("title", "").strip()
+        raw_ids = request.POST.get("selectedIds", "").strip()
+
         poll = Poll()
         poll.anonymous = False
-        # poll.anonymous = data["anonymous"]
-        # poll.start_date = datetime.datetime.fromisoformat(data["start_date"])
-        # poll.end_date = datetime.datetime.fromisoformat(data["end_date"])
-        poll.title = data["title"]
+        poll.title = title
         poll.save()
 
-        for game_id in data["selectedIds"]:
-            poll.games.add(Game.objects.get(id=game_id))
+        if raw_ids:
+            for game_id in raw_ids.split(","):
+                game_id = game_id.strip()
+                if not game_id:
+                    continue
+                try:
+                    poll.games.add(Game.objects.get(id=game_id))
+                except Game.DoesNotExist:
+                    pass
 
         poll.save()
 
         return redirect("poll_added", poll_id=poll.id)
 
+    # GET: показать форму создания голосования
     return render(
         request,
         "polls/poll_add.html",
         context={"games": Game.objects.filter(completed=False).order_by("-id")},
     )
+
 
 
 @login_required
