@@ -39,6 +39,8 @@ urlpatterns = [
     path("vote/error", views.vote_error, name="vote_error"),
     path("unvote/<int:poll_id>", views.poll_unvote, name="poll_unvote"),
     path("unvote_ok/<int:poll_id>", views.poll_unvote_ok, name="poll_unvote_ok"),
+    # health check
+    path("healthz", views.healthz, name="healthz")
 ]
 
 if settings.DEBUG:

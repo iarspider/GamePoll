@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "GamePoll"
+version = "2.0.0"
+description = "Django web application"
+authors = ["iarspider <iarspider@gmail.com>"]
+repository = "https://github.com/iarspider/GamePoll"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+Django = "*"
+social-auth-app-django = "*"
+social-auth-core = "*"
+python-dotenv = "*"
+gunicorn = "*"
+pytils = "*"
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]

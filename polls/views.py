@@ -332,3 +332,7 @@ def poll_unvote_ok(request, poll_id):
 @login_required
 def vote_error(request):
     return render(request, "polls/vote_error.html")
+
+
+def healthz(request):
+    return HttpResponse('{"status": "ok"}', status=200)
