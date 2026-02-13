@@ -50,10 +50,11 @@
 
                 <div class="poll-actions">
                     <a href="{% url "vote_add" poll.id %}" class="btn btn-primary btn-sm {% if poll.status != "active" %}disabled{% endif %}" {% if poll.status != "active" %}aria-disabled="true"{% endif %}>🗳 Проголосовать</a>
-                    <a href="{% url "poll_stats" poll.id %}" class="btn btn-outline-secondary btn-sm {% if poll.status != "finished" %}disabled{% endif %}" {% if poll.status != "finished" %}aria-disabled="true"{% endif %}>🏆 Результаты</a>
+                    <a href="{% url "poll_stats" poll.id %}" class="btn btn-outline-secondary btn-sm {% if poll.status != "finished" and not request.user.is_superuser %}disabled{% endif %}" {% if poll.status != "finished" %}aria-disabled="true"{% endif %}>🏆 Результаты</a>
                     {% if request.user.is_superuser %}
                     <a href="{% url "poll_details" poll.id %}" class="btn btn-outline-secondary btn-sm">📑 Голоса</a>
-                {% endif %}</div>
+                {% endif %}
+                </div>
 
                 {% if request.user.is_superuser %}
                     <div class="btn-group text-end mt-4" role="group">
