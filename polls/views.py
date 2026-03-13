@@ -15,7 +15,6 @@ from django.shortcuts import render, redirect
 from GamePoll import settings
 from polls.models import TwitchUser, Poll, Vote, GameVote, Game, PollBlock
 
-
 # Special views
 
 
@@ -81,7 +80,9 @@ def profile(request):
         votes.append(lock.poll)
 
     open_polls = []
-    for poll in Poll.objects.filter(status="active").exclude(pollblock__person=request.user):
+    for poll in Poll.objects.filter(status="active").exclude(
+        pollblock__person=request.user
+    ):
         open_polls.append(poll)
 
     return render(
@@ -92,7 +93,7 @@ def profile(request):
             "twitch_user": twitch_user,
             "email": user_email,
             "votes": votes,
-            "polls": open_polls
+            "polls": open_polls,
         },
     )
 

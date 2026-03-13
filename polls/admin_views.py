@@ -116,7 +116,9 @@ def game_import(request):
     if request.method == "POST":
         for game_id in request.POST.getlist("steam_ids"):
             if not re.fullmatch(r"\d+", game_id):
-                game_id = re.sub(r"^https://store.steampowered.com/app/(\d+)/.*$", r"\1", game_id)
+                game_id = re.sub(
+                    r"^https://store.steampowered.com/app/(\d+)/.*$", r"\1", game_id
+                )
             if not re.fullmatch(r"\d+", game_id):
                 messages.add_message(
                     request,
@@ -213,7 +215,6 @@ def poll_add(request):
         "polls/poll_add.html",
         context={"games": Game.objects.filter(completed=False).order_by("-id")},
     )
-
 
 
 @login_required

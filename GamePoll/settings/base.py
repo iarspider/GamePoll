@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+
 import os
 from pathlib import Path
 from platform import platform
@@ -108,7 +109,7 @@ DATABASES = {
         "NAME": SQLITE_PATH,
         "OPTIONS": {
             "timeout": 20,  # ожидание при блокировке
-            "init_command": "PRAGMA journal_mode=WAL;"
+            "init_command": "PRAGMA journal_mode=WAL;",
         },
     }
 }
@@ -117,8 +118,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
-]
+AUTH_PASSWORD_VALIDATORS = []
 
 
 # Internationalization
@@ -157,7 +157,7 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {"format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s"},
-        "simple":  {"format": "%(levelname)s %(message)s"},
+        "simple": {"format": "%(levelname)s %(message)s"},
     },
     "handlers": {
         "file_app": {
@@ -174,6 +174,6 @@ LOGGING = {
     },
     "loggers": {
         "django": {"handlers": ["file_django", "console"], "level": "INFO"},
-        "":       {"handlers": ["file_app", "console"],   "level": "INFO"},  # root logger
+        "": {"handlers": ["file_app", "console"], "level": "INFO"},  # root logger
     },
 }
