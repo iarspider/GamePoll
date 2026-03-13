@@ -147,7 +147,7 @@ def poll_vote(request, poll_id):
         vote.owl = data["owl_checkbox"]
         vote.bee = data["bee_checkbox"]
         vote.cheese = data["cheese_checkbox"]
-        vote.sub_vote = twitch_user.subscribed
+        vote.sub_vote = twitch_user.subscribed if twitch_user else False
 
         vote.save()
 
@@ -249,7 +249,11 @@ def poll_stats(request, poll_id):
     data: list[list[tuple[int, int, float]]] = []
 
     for vote in votes:
-        viewer = TwitchUser.objects.get(user=vote.person)
+        try:
+            viewer = TwitchUser.objects.get(user=vote.person)
+            is_sub = viewer.subscribed
+        except TwitchUser.DoesNotExist:
+            is_sub = False
 
         result["🦉"] += "🦉" * vote.owl
         result["🐝"] += "🐝" * vote.bee
@@ -260,7 +264,7 @@ def poll_stats(request, poll_id):
         data.append(
             sorted(
                 [
-                    (gv.game.id, gv.rating, 1.5 if viewer.subscribed else 1.0)
+                    (gv.game.id, gv.rating, 1.5 if is_sub else 1.0)
                     for gv in game_votes
                 ],
                 key=itemgetter(1),
