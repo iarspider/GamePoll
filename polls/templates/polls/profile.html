@@ -47,13 +47,26 @@
   </div>
 
   <div class="card mb-4">
-    <div class="card-header">Ваши голоса</div>
+    <div class="card-header">Активные голосования</div>
     <ul class="list-group list-group-flush">
       {% for poll in polls %}
       <li class="list-group-item d-flex justify-content-between align-items-center">
-        {{ poll }}
-        {% if poll.status == "active" %}
-        <a href="{% url "poll_unvote" poll.id %}" class="btn btn-sm btn-outline-primary">Переголосовать</a>
+        <a href="{% url "vote_add" poll.id %}">{poll.title}</a>
+      </li>
+      {% empty %}
+      <li class="list-group-item text-muted">Нет активных голосований</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">Ваши голоса</div>
+    <ul class="list-group list-group-flush">
+      {% for vote in votes %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        {{ vote }}
+        {% if vote.status == "active" %}
+        <a href="{% url "poll_unvote" vote.id %}" class="btn btn-sm btn-outline-primary">Переголосовать</a>
         {% endif %}
       </li>
       {% empty %}

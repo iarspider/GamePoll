@@ -76,9 +76,13 @@ def profile(request):
     except TwitchUser.DoesNotExist:
         twitch_user = None
 
-    polls = []
+    votes = []
     for lock in PollBlock.objects.filter(person=user):
-        polls.append(lock.poll)
+        votes.append(lock.poll)
+
+    open_polls = []
+    for poll in Poll.objects.filter(status="active").exclude(pollblock__person=request.user):
+        open_polls.append(poll)
 
     return render(
         request,
@@ -87,7 +91,8 @@ def profile(request):
             "user": user,
             "twitch_user": twitch_user,
             "email": user_email,
-            "polls": polls,
+            "votes": votes,
+            "polls": open_polls
         },
     )
 
