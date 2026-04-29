@@ -60,10 +60,16 @@ class GameVote(models.Model):
     class Meta:
         unique_together = ("game", "vote")
 
+    def __str__(self):
+        return f"Vote of {self.vote.person} in poll {self.vote.poll}"
+
 
 class PollBlock(models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
     person = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Lock for {self.user} on {self.poll}"
 
     class Meta:
         unique_together = ("poll", "person")
