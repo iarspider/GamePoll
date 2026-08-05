@@ -13,5 +13,6 @@ exec gunicorn GamePoll.wsgi:application \
   --workers "${GUNICORN_WORKERS:-1}" \
   --threads "${GUNICORN_THREADS:-2}" \
   --timeout "${GUNICORN_TIMEOUT:-60}" \
+  --no-control-socket \
   --access-logfile - \
   --error-logfile -
