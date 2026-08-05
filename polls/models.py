@@ -69,7 +69,7 @@ class PollBlock(models.Model):
     person = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"Lock for {self.user} on {self.poll}"
+        return f"Lock for {self.person} on {self.poll}"
 
     class Meta:
         unique_together = ("poll", "person")
